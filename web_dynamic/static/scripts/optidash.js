@@ -1,3 +1,22 @@
+
+const socket = io('http://localhost:5006');
+
+console.log('Socket.IO script loaded, trying to connect...');
+
+socket.on('connect', () => {
+    console.log('Successfully connected to the server via Socket.IO');
+});
+
+socket.on('update', (data) => {
+    console.log('Received update from server:', data);
+    if (data.nxt_gen_fit3) {
+        plotData1(data.nxt_gen_fit1, data.nxt_gen_fit2, data.nxt_gen_fit3);
+    } else {
+        plotData(data.nxt_gen_fit1, data.nxt_gen_fit2);
+    }
+           
+});
+
 function generateTable() {
     const rows = document.getElementById('rows').value;
     const cols = document.getElementById('cols').value;
@@ -7,9 +26,9 @@ function generateTable() {
     // Header row with criteria names
 
     table += '<tr>';
-    table += '<th>Objective Function</th>';
-    table += `<td ><input type="text" placeholder="Enter objective function 1" id="objectiveFunction1"></td>`;
+    table += `<td><input type="text" placeholder="Enter objective function 1" id="objectiveFunction1"></td>`;
     table += `<td><input type="text" placeholder="Enter objective function 2" id="objectiveFunction2"></td>`;
+    table += `<td><input type="text" placeholder="Enter objective function 3" id="objectiveFunction3"></td>`;
     table += '</tr>';
     for (let j = 0; j < cols; j++) {
         const content = ["Criteria Name", "Lower Bound", "Upper Bound"][j];
@@ -46,11 +65,10 @@ function generateTable() {
     table += '</table>';
     const tableContainer = document.getElementById('table-container');
     tableContainer.innerHTML = table;
-
-
 }
 
-function submitFormData() {
+function submitFormData(event) {
+    event.preventDefault()
     const rows = document.getElementById('rows').value;
     const cols = document.getElementById('cols').value;
 
@@ -76,8 +94,11 @@ function submitFormData() {
     
     const obj1 = document.getElementById("objectiveFunction1").value;
     const obj2 = document.getElementById("objectiveFunction2").value;
-    tableData1.push(obj1);
-    tableData1.push(obj2);
+    const obj3 = document.getElementById("objectiveFunction3").value;
+    if (obj1) tableData1.push(obj1);
+    if (obj2) tableData1.push(obj2);
+    if (obj3) tableData1.push(obj3);
+
     
 
     $.ajax({
@@ -87,10 +108,52 @@ function submitFormData() {
         data: JSON.stringify({ tableData, tableData1}),
         success: function (data) {
             $('#results-container').html('The best choice of your alternatives is: ' + data.best_alternative + ' ranks 1st with a performance score of ' + data.best_perf_score);
+            // Call plotData with the data returned from the server
         },
 
         error: function (error) {
             console.error('Error:', error);
         }
     });
+}
+
+// socket.on('update', (data) => {
+//     console.log(data);
+//     plotData(data.fit1, data.fit2);
+// });
+
+function plotData(fit1, fit2) {
+    console.log('Plotting data:', fit1, fit2);
+    const trace = {
+        x: fit1,
+        y: fit2,
+        mode: 'markers',
+        type: 'scatter'
+    };
+    const layout = {
+        title: 'Pareto Front',
+        xaxis: { title: 'Objective 1' },
+        yaxis: { title: 'Objective 2' }
+    };
+    Plotly.newPlot('plot', [trace], layout);
+}
+
+function plotData1(fit1, fit2, fit3) {
+    console.log('Plotting data:', fit1, fit2, fit3);
+    const trace = {
+        x: fit1,
+        y: fit2,
+        z: fit3,
+        mode: 'markers',
+        type: 'scatter3d'
+    };
+    const layout = {
+        title: '3D Pareto Front',
+        scene: {
+            xaxis: { title: 'Objective 1' },
+            yaxis: { title: 'Objective 2' },
+            zaxis: { title: 'Objective 3' }
+        }
+    };
+    Plotly.newPlot('plot', [trace], layout);
 }
