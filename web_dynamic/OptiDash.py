@@ -3,47 +3,22 @@
 this the choice crafter flask app
 """
 
-# from re import M
-# from timeit import repeat
-# from numpy.random import beta, rand, randint
-# import numpy as np
-# # import matplotlib.pyplot as plt
-# import matplotlib
-# from requests import delete
-# from sympy import N
 
-# matplotlib.use('TkAgg')
-# import matplotlib.pyplot as plt
-# from numpy import append, array, exp, sqrt
-# import tempfile
-
-# from mpl_toolkits.mplot3d import axes3d
-# from models import storage
-# from models.criteria import Criteria
-# from models.alternative import Alternative
-# from models.result import Result
-
-# from flask import Flask, render_template, request, jsonify
-# from sqlalchemy import String, Float, ForeignKey
-# from sqlalchemy import create_engine, Column, Integer
-# from sqlalchemy.orm import sessionmaker, relationship
-# from sqlalchemy.orm import declarative_base
-# from sqlalchemy.ext.declarative import declarative_base
-# from os import getenv
-# from flask import session
-# import secrets
-# import json
+from models import storage
+from models.users import Users
+from flask import url_for, redirect, flash
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask import Flask, render_template, request, jsonify
 from flask_socketio import SocketIO, emit
 import time
-import copy
 import copy
 import math
 import random
 import numpy as np
 from cmath import inf, nan
+from werkzeug.security import generate_password_hash, check_password_hash
+import json
 
-from flask_cors import CORS
 
 
 
@@ -51,21 +26,77 @@ from flask_cors import CORS
 
 
 app = Flask(__name__)
-CORS(app) 
+ 
 socketio = SocketIO(app, cors_allowed_origins="*")
+app.config["SECRET_KEY"] = "abulyaqs@gmail.com"
 
-# @app.teardown_appcontext
-# def close_db(error):
-#     """ Remove the current SQLAlchemy Session """
-#     storage.close()
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def loader_user(id):
+    return storage.get(Users, int(id))
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    flash('Login is required to access this page', 'warning')
+    return redirect(url_for('login'))
 
 
 @app.route('/', methods=['GET', 'POST'], strict_slashes=False)
 def index():
-    """ this is a index function for the index route """
+    if request.method == "POST":
+        username = username=request.form.get("username")
+        password = password=request.form.get("password")
+        # existing_user = Users.query.filter_by(username=username).first()
+        existing_user = storage.get_by_username(Users, username)
+        if existing_user:
+            flash('Username already taken. Please choose a different username.', 'danger')
+            return render_template('index.html')
+        new_user = Users(username=username, password=generate_password_hash(password))
+        storage.new(new_user)
+        storage.save()
+        return redirect(url_for("login"))
     return render_template('index.html')
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = username=request.form.get("username")
+        password = password=request.form.get("password")
+        user = storage.get_by_username(Users, username)
+        if  user is not None and check_password_hash(user.password, password):
+            login_user(user)
+            return redirect(url_for('home'))
+        else:
+            flash("Invalid username or password", "danger")
+    return render_template("login.html")
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("login"))
+        
+
+
+
+
+
+@app.teardown_appcontext
+def close_db(error):
+    """ Remove the current SQLAlchemy Session """
+    storage.close()
+
+
+# @app.route('/', methods=['GET', 'POST'], strict_slashes=False)
+# def index():
+#     """ this is a index function for the index route """
+#     return render_template('index.html')
+
 @app.route('/home', methods=['GET', 'POST'], strict_slashes=False)
+@login_required
 def home():
     """ this is a index function for the index route """
     if request.method == "POST":

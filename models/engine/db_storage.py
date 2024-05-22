@@ -3,10 +3,8 @@
 Contains the class DBStorage
 """
 import models
-from models.criteria import Criteria
-from models.alternative import Alternative
+from models.users import Users
 from models.base_model import BaseModel, Base
-from models.result import Result
 import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -77,6 +75,18 @@ class DBStorage:
         all_cls = models.storage.all(cls)
         for value in all_cls.values():
             if (value.id == id):
+                return value
+        return None
+    def get_by_username(self, cls, username):
+        """
+        Returns the user object based on the class name and its username, or
+        None if not found
+        """
+        if cls not in classes.values():
+            return None
+        all_cls = models.storage.all(cls)
+        for value in all_cls.values():
+            if (value.username == username):
                 return value
         return None
 

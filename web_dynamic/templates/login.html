@@ -18,7 +18,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/footer.css') }}">
     
    
-    <title>Registration Form</title>
+    <title>Login</title>
   </head>
   <body>
 
@@ -35,32 +35,26 @@
             <img style="width: 100%"src="{{ url_for('static', filename='images/OptiDash.png') }}" alt="OptiDash Logo">
         </div>
     </div>
-    
     <div class="container">
-        <h1>Create an account</h1>
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
         {% endwith %}
-        <form clsass="form-inline" id="registration-form" method="POST">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-            <span id="username-error" class="error"></span>
-
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            <span id="password-error" class="error"></span>
-
-            <label for="confirm-password">Confirm Password:</label>
-            <input type="password" id="confirm-password" name="confirm-password" required>
-            <span id="confirm-password-error" class="error"></span>
-
-            <button type="submit">Register</button>
+        <h1>Login to your account</h1>
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
         </form>
-
     </div>
     
     {% include 'footer.html' %}

@@ -10,7 +10,22 @@ class Users(BaseModel, Base):
     __tablename__ = 'users'
     username = Column(String(250), unique=True, nullable=False)
     password = Column(String(250), nullable=False)
-    
+
     def __init__(self, *args, **kwargs):
         """initializes criteria"""
         super().__init__(*args, **kwargs)
+
+    def get_id(self):
+        return str(self.id)
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
