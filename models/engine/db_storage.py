@@ -4,6 +4,8 @@ Contains the class DBStorage
 """
 import models
 from models.users import Users
+from models.problems import Problems
+from models.optimizationresult import OptimizationResult
 from models.base_model import BaseModel, Base
 import sqlalchemy
 from sqlalchemy import create_engine
@@ -11,7 +13,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from os import getenv
 
 
-classes = {"Users": Users}
+classes = {"Users": Users, "OptimizationResult": OptimizationResult, "Problems": Problems}
 
 
 class DBStorage:
@@ -77,6 +79,8 @@ class DBStorage:
             if (value.id == id):
                 return value
         return None
+
+
     def get_by_username(self, cls, username):
         """
         Returns the user object based on the class name and its username, or
@@ -89,6 +93,50 @@ class DBStorage:
             if (value.username == username):
                 return value
         return None
+
+    def get_problems_by_user_id(self, users_id):
+        """Returns all problems associated with a specific user_id"""
+        all_problems = self.all(Problems)
+        user_problems = [problem for problem in all_problems.values() if problem.users_id == int(users_id)]
+        return user_problems
+
+    def get_optimization_results_by_problem_id(self, problem_id):
+        """Returns all optimization results associated with a specific problem_id"""
+        all_results = self.all(OptimizationResult)
+        problem_results = [result for result in all_results.values() if result.problem_id == int(problem_id)]
+        return problem_results
+
+
+    # def get_by_users_id(self, cls, users_id):
+    #     """
+    #     Returns the user object based on the class name and its username, or
+    #     None if not found
+    #     """
+    #     if cls not in classes.values():
+    #         return None
+    #     all_cls = models.storage.all(cls)
+    #     for value in all_cls.values():
+    #         if (value.users_id == users_id):
+    #             return value
+    #     return None
+
+
+    # def get_prob_user(self, cls, users_id):
+    #     """Returns objects based on class, user_id, and id"""
+    #     if cls not in classes.values():
+    #         return None
+    #     all_cls = models.storage.all(cls)
+    #     for value in all_cls.values():
+    #         if value.users_id == users_id:
+    #             return value
+    #     return None
+        
+    
+    # def get_problems_by_user_id(self, users_id):
+    #     """Returns all problems associated with a specific user_id"""
+    #     all_problems = self.all(Problems)
+    #     user_problems = [problem for problem in all_problems.values() if problem.users_id == users_id]
+    #     return user_problems
 
     def count(self, cls=None):
         """

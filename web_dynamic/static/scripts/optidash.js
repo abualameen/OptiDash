@@ -7,8 +7,12 @@ socket.on('connect', () => {
     console.log('Successfully connected to the server via Socket.IO');
 });
 
+
+  
+
 socket.on('update', (data) => {
-    console.log('Received update from server:', data);
+    // console.log('Received update from server:', data);
+    
     if (data.nxt_gen_fit3) {
         plotData1(data.nxt_gen_fit1, data.nxt_gen_fit2, data.nxt_gen_fit3);
     } else {
@@ -16,6 +20,7 @@ socket.on('update', (data) => {
     }
            
 });
+
 
 function generateTable() {
     const rows = document.getElementById('rows').value;
@@ -30,11 +35,27 @@ function generateTable() {
     table += `<td><input type="text" placeholder="Enter objective function 2" id="objectiveFunction2"></td>`;
     table += `<td><input type="text" placeholder="Enter objective function 3" id="objectiveFunction3"></td>`;
     table += '</tr>';
+
+    table += '<tr>';
+    // for (let k = 0; k < cols; k++) {
+        table += `<th><select name="Objectives" required id="objectives">`;
+        table += '<option value="" disabled selected hidden>Objectives</option>';
+        table += '<option value="Minimization">Minimazation</option>';
+        table += '<option value="Maximization">Maximization</option>';
+        table += '</select></th>';
+    // }
+    table += '</tr>';
+
+
     for (let j = 0; j < cols; j++) {
         const content = ["Criteria Name", "Lower Bound", "Upper Bound"][j];
         table += `<th>${content}</th>`;
     }
     table += '</tr>';
+
+
+    
+
 
     // table += '<tr>';
     // for (let k = 0; k < cols; k++) {
@@ -75,6 +96,7 @@ function submitFormData(event) {
     // Collect table data
     const tableData = [];
     const tableData1 = [];
+    const tableData2 = [];
     for (let i = 0; i < rows; i++) {
         const rowData = [];
         for (let j = 0; j < cols; j++) {
@@ -85,12 +107,6 @@ function submitFormData(event) {
         // console.log(tableData)
     }
 
-    // for (let k = 0; k < cols; k++) {
-    //     const criteriaName = document.getElementById(`name_${k}`).value;
-    //     const criteriaType = document.getElementById(`type_${k}`).value;
-    //     tableData1.push(criteriaName);
-    //     tableData1.push(criteriaType);
-    // }
     
     const obj1 = document.getElementById("objectiveFunction1").value;
     const obj2 = document.getElementById("objectiveFunction2").value;
@@ -99,18 +115,63 @@ function submitFormData(event) {
     if (obj2) tableData1.push(obj2);
     if (obj3) tableData1.push(obj3);
 
+    const objectives = document.getElementById("objectives").value
+    tableData2.push(objectives)
+
     
 
     $.ajax({
         type: 'POST',
         url: '/home',
         contentType: 'application/json;charset=UTF-8',
-        data: JSON.stringify({ tableData, tableData1}),
+        data: JSON.stringify({ tableData, tableData1, tableData2}),
         success: function (data) {
-            $('#results-container').html('The best choice of your alternatives is: ' + data.best_alternative + ' ranks 1st with a performance score of ' + data.best_perf_score);
-            // Call plotData with the data returned from the server
+            // Prepare data arrays
+            let obj1Values = data.opti_front_obj1; // Assuming this is an array
+            let obj2Values = data.opti_front_obj2; // Assuming this is an array
+            let obj3Values = data.opti_front_obj3 || []; // Assuming this is an array or not provided
+            let params = data.opti_para; // Assuming this is an array
+            
+            function roundToSignificantDigits(num, digits) {
+                return Number(num).toPrecision(digits);
+            }
+    
+            // Check if all arrays have the same length
+            if (obj1Values.length === obj2Values.length && (obj3Values.length === 0 || obj3Values.length === obj1Values.length) && params.length === obj1Values.length) {
+                let resultHtml = `
+                    <table border="1">
+                        <thead>
+                            <tr>
+                                <th>Optimal Parameters</th>
+                                <th>Optimal Fitness Value 1</th>
+                                <th>Optimal Fitness Value 2</th>
+                                ${obj3Values.length > 0 ? '<th>Optimal Fitness Value 3</th>' : ''}
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+    
+                for (let i = 0; i < obj1Values.length; i++) {
+                    resultHtml += `
+                        <tr>
+                            <td>[${params[i].map(num => roundToSignificantDigits(num, 4)).join(', ')}]</td>
+                            <td>${roundToSignificantDigits(obj1Values[i], 4)}</td>
+                            <td>${roundToSignificantDigits(obj2Values[i], 4)}</td>
+                            ${obj3Values.length > 0 ? `<td>${roundToSignificantDigits(obj3Values[i], 4)}</td>` : ''}
+                        </tr>
+                    `;
+                }
+    
+                resultHtml += `
+                        </tbody>
+                    </table>
+                `;
+    
+                $('#results-container').html(resultHtml);
+            } else {
+                $('#results-container').html('<p>Error: Mismatch in data lengths.</p>');
+            }
         },
-
         error: function (error) {
             console.error('Error:', error);
         }

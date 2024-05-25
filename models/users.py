@@ -9,8 +9,12 @@ from sqlalchemy.orm import relationship
 class Users(BaseModel, Base):
     __tablename__ = 'users'
     username = Column(String(250), unique=True, nullable=False)
+    email = Column(String(250), nullable=False, unique=True)
     password = Column(String(250), nullable=False)
-
+    problems = relationship('Problems', backref='user', lazy=True)
+    optimization_results = relationship('OptimizationResult', backref='user', lazy=True)
+    
+    
     def __init__(self, *args, **kwargs):
         """initializes criteria"""
         super().__init__(*args, **kwargs)
