@@ -37,13 +37,13 @@ function generateTable() {
     table += '</tr>';
 
     table += '<tr>';
-    // for (let k = 0; k < cols; k++) {
-        table += `<th><select name="Objectives" required id="objectives">`;
+    for (let k = 0; k < cols; k++) {
+        table += `<th><select name="objective" required id="type_${k}">`;
         table += '<option value="" disabled selected hidden>Objectives</option>';
         table += '<option value="Minimization">Minimazation</option>';
         table += '<option value="Maximization">Maximization</option>';
         table += '</select></th>';
-    // }
+    }
     table += '</tr>';
 
 
@@ -115,8 +115,15 @@ function submitFormData(event) {
     if (obj2) tableData1.push(obj2);
     if (obj3) tableData1.push(obj3);
 
-    const objectives = document.getElementById("objectives").value
-    tableData2.push(objectives)
+    // const objectives = document.getElementById("objectives").value
+    // tableData2.push(objectives)
+
+    for (let p = 0; p < cols; p++) {
+        const cellValue = document.getElementById(`type_${p}`).value;
+        if (cellValue) tableData2.push(cellValue);
+        // console.log(tableData)
+    }
+    
 
     
 

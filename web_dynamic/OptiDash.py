@@ -118,6 +118,7 @@ def home():
         # print('data:', data)
         table_data = data.get('tableData')
         table_data1 = data.get('tableData1')
+        table_data2 = data.get('tableData2')
         # print('table:', table_data)
         # print('table1:', table_data1)
         # outputs = nsga2(table_data, table_data1)
@@ -129,11 +130,11 @@ def home():
         
         if len(table_data1) == 2:
             # socketio.start_background_task(target=nsga2, table_data=table_data, table_data1=table_data1)
-            results = socketio.start_background_task(target=nsga2, table_data=table_data, table_data1=table_data1, task_id=task_id)
+            results = socketio.start_background_task(target=nsga2, table_data=table_data, table_data1=table_data1, table_data2=table_data2, task_id=task_id)
 
         else:
             # socketio.start_background_task(target=nsgaa2, table_data=table_data, table_data1=table_data1)
-            results = socketio.start_background_task(target=nsgaa2, table_data=table_data, table_data1=table_data1, task_id=task_id)
+            results = socketio.start_background_task(target=nsgaa2, table_data=table_data, table_data1=table_data1, table_data2=table_data2, task_id=task_id)
         
          # Wait for the task to complete
         while True:
@@ -221,8 +222,13 @@ def contact_us():
     return render_template('contact_us.html')
 
 
-def nsga2(table_data, table_data1, task_id):
+def nsga2(table_data, table_data1, table_data2, task_id):
     time.sleep(1)
+
+    print('tab', table_data)
+    print('tab1', table_data1)
+    print('tab2', table_data2)
+    
     table_dataa = []
     for sublist in table_data: # Converting the search space from string to ing
         row = []
@@ -238,11 +244,9 @@ def nsga2(table_data, table_data1, task_id):
         dv.append(table_new[k][0])
 
     pop_size = 100
-    # bounds = [[table_new[0][1], table_new[0][2]], [table_new[1][1], table_new[1][2]], [table_new[2][1],table_new[2][2]]]
     bounds = [[row[1], row[2]] for row in table_new]
 
-    # pop_size = 300
-    # bounds = [[0, 1], [0, 1],[0,1], [0,1], [0,1], [0,1],[0,1]]#, [0,1], [0,1], [0,1],[0, 1], [0, 1], [0,1], [0,1], [0,1], [0,1],[0,1], [0,1], [0,1], [0,1],[0, 1], [0, 1], [0,1], [0,1], [0,1], [0,1],[0,1], [0,1], [0,1], [0,1]]
+
 
 
     nv = len(bounds)
@@ -282,69 +286,11 @@ def nsga2(table_data, table_data1, task_id):
 
     # print(classpopp)
     pop = [list(ele) for ele in popss]
-    #pop = [[0.913, 2.181], [0.599, 2.450],[0.139, 1.157],[0.867, 1.505],[0.885, 1.239],[0.658,2.040],[0.788, 2.166],[0.342, 0.756]]
-    #pop = [[0.913, 2.181], [0.599, 2.450],[0.139, 1.157],[0.867, 1.505],[0.885, 1.239],[0.658,2.040],[0.788, 2.166],[0.342, 0.756]]
 
-    # def objective_function(I):
-    #     x1 = I[0]
-    #     objective_max = x1
-    #     return objective_max
-    # fitnessvalue  = [objective_function(h) for h in pop]
-
-    # def objective_function1(I):
-    #     x1 = I[0]
-    #     x2 = I[1]
-
-    #     objective_max = 1 + x2 - (x1)**2
-    #     return objective_max
-
-    # fitnessvalue1  = [objective_function1(h) for h in pop]
 
     objective_function = create_objective_function(dv, table_data1[0])
     objective_function1 = create_objective_function(dv, table_data1[1])
-    # objective_function2 = create_objective_function(dv, table_data1[2])
 
-    # fitnessvalue = [objective_function(h) for h in pop]
-    # fitnessvalue1 = [objective_function1(h) for h in pop]
-    # fitnessvalue2 = [objective_function2(h) for h in pop]
-
-    # nxt_gen_fit1 = [objective_function(h) for h in pop]
-    # nxt_gen_fit2 = [objective_function1(h) for h in pop]
-    # nxt_gen_fit3 = [objective_function2(h) for h in pop]
-    # # socketio.emit('update', {'fit1': fitnessvalue, 'fit2': fitnessvalue1})
-    # try:
-    #     socketio.emit('update', {'nxt_gen_fit1': nxt_gen_fit1, 'nxt_gen_fit2': nxt_gen_fit2, 'nxt_gen_fit3': nxt_gen_fit3})
-    #     # print('Update event emitted successfully')
-    # except Exception as e:
-    #     print('Error emitting update event:', str(e))
-
-
-    ################################# plotintin initial population  ##################################
-    # fig = plt.figure()
-    # ax = fig.add_subplot(111, projection='3d')
-    # plt.rcParams['font.family'] = "serif"
-    # plt.rcParams["font.serif"] = ["Times New Roman"]
-
-    # # Scatter plot in 3D
-    # ax.scatter(fitnessvalue, fitnessvalue1, fitnessvalue2, c='blue')
-
-    # ax.set_title('Evolution of the best chromosome')
-    # ax.set_xlabel('COP')
-    # ax.set_ylabel('SCP_ads')
-    # ax.set_zlabel('CT')
-
-    # plt.show()
-
-
-
-    # plt.show()
-
-
-    # fitnessvalue  = [objective_function(h) for h in pop]
-    # fitnessvalue1  = [objective_function1(h) for h in pop]
-    # fff = [fitnessvalue ,fitnessvalue1, fitnessvalue2]
-        # if i % 10 == 0 and i > 1:
-        #     print(" iter = " + str(i) + " best fitness = %.3f" % min(bestfitness))
         
 
 
@@ -353,6 +299,41 @@ def nsga2(table_data, table_data1, task_id):
 
 
     #     ############# CROWDINGIN DISTANCE ########################################
+
+
+    
+    def dominates(ind1, ind2, obj_types):
+        """Return True if ind1 dominates ind2 based on objective types."""
+        if obj_types[0] == "Minimization" and obj_types[1] == "Minimization":
+            if (ind1[0] <= ind1[1] and ind2[0] <= ind2[1]):
+                return True
+        elif obj_types[0] == "Maximization" and obj_types[1] == "Maximization":
+            if (ind1[0] >= ind1[1] and ind2[0] >= ind2[1]):
+                return True
+        elif obj_types[0] == "Minimization" and obj_types[1] == "Maximization":
+            if (ind1[0] <= ind1[1] and ind2[0] >= ind2[1]):
+                return True
+        elif obj_types[0] == "Maximization" and obj_types[1] == "Minimization":
+            if (ind1[0] >= ind1[1] and ind2[0] <= ind2[1]):
+                return True
+        return False
+
+    def non_dominates(ind1, ind2, obj_types):
+        """Return True if ind1 dominates ind2 based on objective types."""
+        if obj_types[0] == "Minimization" and obj_types[1] == "Minimization":
+            if (ind1[0] < ind1[1] or ind2[0] < ind2[1]):
+                return True
+        elif obj_types[0] == "Maximization" and obj_types[1] == "Maximization":
+            if (ind1[0] > ind1[1] or ind2[0] > ind2[1]):
+                return True
+        elif obj_types[0] == "Minimization" and obj_types[1] == "Maximization":
+            if (ind1[0] < ind1[1] or ind2[0] > ind2[1]):
+                return True
+        elif obj_types[0] == "Maximization" and obj_types[1] == "Minimization":
+            if (ind1[0] > ind1[1] or ind2[0] < ind2[1]):
+                return True
+        return False
+
 
     ita_count = 0 
     for zz in range(iteration):
@@ -381,15 +362,23 @@ def nsga2(table_data, table_data1, task_id):
             for i in range(pop_size):
                 nx = 0
                 
-        
                 for j in range(pop_size):
                     if i != j:
-                        if (fitnessvalue[i] <= fitnessvalue[j] and fitnessvalue1[i] <= fitnessvalue1[j]): # if fitnessvalue[i] dominates fitnessvalue[j]
+                        if (dominates([fitnessvalue[i], fitnessvalue[j]], [fitnessvalue1[i], fitnessvalue1[j]], table_data2)):
                             Sps[i].append(j)
-                        elif (fitnessvalue[i] < fitnessvalue[j] or fitnessvalue1[i] < fitnessvalue1[j]): # if fitnessvalue[i] is non dominated by fitnessvalue[j]
+                        elif (non_dominates([fitnessvalue[i], fitnessvalue[j]], [fitnessvalue1[i], fitnessvalue1[j]], table_data2)):
                             continue
                         else:
-                            nx = nx + 1      # nx else nx is incremented by 1 indicating the element is dominated by one element
+                            nx = nx + 1   
+        
+                # for j in range(pop_size):
+                #     if i != j:
+                #         if (fitnessvalue[i] <= fitnessvalue[j] and fitnessvalue1[i] <= fitnessvalue1[j]): # if fitnessvalue[i] dominates fitnessvalue[j]
+                #             Sps[i].append(j)
+                #         elif (fitnessvalue[i] < fitnessvalue[j] or fitnessvalue1[i] < fitnessvalue1[j]): # if fitnessvalue[i] is non dominated by fitnessvalue[j]
+                #             continue
+                #         else:
+                #             nx = nx + 1      # nx else nx is incremented by 1 indicating the element is dominated by one element
                 nxs.append(nx)             # nxs-  number of solution that dominates fitenessvalue[i] 
                 if nx == 0:                         # if nx equal to zero meaning the solution is not dominated by any solution and they belong to the first front or front 1
                     P_rank = 0                     # is  the front one ranking
@@ -864,7 +853,7 @@ def nsga2(table_data, table_data1, task_id):
 # import random
 # from mpl_toolkits.mplot3d import axes3d
 
-def nsgaa2(table_data, table_data1, task_id):
+def nsgaa2(table_data, table_data1, table_data2, task_id):
     time.sleep(1)
     table_dataa = []
     for sublist in table_data: # Converting the search space from string to ing
@@ -947,47 +936,62 @@ def nsgaa2(table_data, table_data1, task_id):
     objective_function1 = create_objective_function(dv, table_data1[1])
     objective_function2 = create_objective_function(dv, table_data1[2])
 
-    # fitnessvalue = [objective_function(h) for h in pop]
-    # fitnessvalue1 = [objective_function1(h) for h in pop]
-    # fitnessvalue2 = [objective_function2(h) for h in pop]
+    def dominates(ind1, ind2, ind3, obj_types):
+        """Return True if ind1 dominates ind2 based on objective types."""
+        if obj_types[0] == "Minimization" and obj_types[1] == "Minimization" and obj_types[2] == "Minimization":
+            if (ind1[0] <= ind1[1] and ind2[0] <= ind2[1] and ind3[0] <= ind3[1]):
+                return True
+        elif obj_types[0] == "Maximization" and obj_types[1] == "Maximization" and obj_types[2] == "Maximization":
+            if (ind1[0] >= ind1[1] and ind2[0] >= ind2[1] and ind3[0] >= ind3[1]):
+                return True
+        elif obj_types[0] == "Maximization" and obj_types[1] == "Minimization" and obj_types[2] == "Minimization":
+            if (ind1[0] >= ind1[1] and ind2[0] <= ind2[1] and ind3[0] <= ind3[1]):
+                return True
+        elif obj_types[0] == "Minimization" and obj_types[1] == "Maximization" and obj_types[2] == "Maximization":
+            if (ind1[0] <= ind1[1] and ind2[0] >= ind2[1] and ind3[0] >= ind3[1]):
+                return True
+        elif obj_types[0] == "Maximization" and obj_types[1] == "Maximization" and obj_types[2] == "Minimization":
+            if (ind1[0] >= ind1[1] and ind2[0] >= ind2[1] and ind3[0] <= ind3[1]):
+                return True
+        elif obj_types[0] == "Minimization" and obj_types[1] == "Minimization" and obj_types[2] == "Maximization":
+            if (ind1[0] <= ind1[1] and ind2[0] <= ind2[1] and ind3[0] >= ind3[1]):
+                return True
+        elif obj_types[0] == "Maximization" and obj_types[1] == "Minimization" and obj_types[2] == "Maximization":
+            if (ind1[0] >= ind1[1] and ind2[0] <= ind2[1] and ind3[0] >= ind3[1]):
+                return True
+        elif obj_types[0] == "Minimization" and obj_types[1] == "Maximization" and obj_types[2] == "Minimization":
+            if (ind1[0] <= ind1[1] and ind2[0] >= ind2[1] and ind3[0] <= ind3[1]):
+                return True
+        return False
 
-    # nxt_gen_fit1 = [objective_function(h) for h in pop]
-    # nxt_gen_fit2 = [objective_function1(h) for h in pop]
-    # nxt_gen_fit3 = [objective_function2(h) for h in pop]
-    # # socketio.emit('update', {'fit1': fitnessvalue, 'fit2': fitnessvalue1})
-    # try:
-    #     socketio.emit('update', {'nxt_gen_fit1': nxt_gen_fit1, 'nxt_gen_fit2': nxt_gen_fit2, 'nxt_gen_fit3': nxt_gen_fit3})
-    #     # print('Update event emitted successfully')
-    # except Exception as e:
-    #     print('Error emitting update event:', str(e))
+    def non_dominates(ind1, ind2, ind3, obj_types):
+        """Return True if ind1 dominates ind2 based on objective types."""
+        if obj_types[0] == "Minimization" and obj_types[1] == "Minimization" and obj_types[2] == "Minimization":
+            if (ind1[0] < ind1[1] or ind2[0] < ind2[1] or ind3[0] < ind3[1]):
+                return True
+        elif obj_types[0] == "Maximization" and obj_types[1] == "Maximization" and obj_types[2] == "Maximization":
+            if (ind1[0] > ind1[1] or ind2[0] > ind2[1] or ind3[0] > ind3[1]):
+                return True
+        elif obj_types[0] == "Maximization" and obj_types[1] == "Minimization" and obj_types[2] == "Minimization":
+            if (ind1[0] > ind1[1] or ind2[0] < ind2[1] or ind3[0] < ind3[1]):
+                return True
+        elif obj_types[0] == "Minimization" and obj_types[1] == "Maximization" and obj_types[2] == "Maximization":
+            if (ind1[0] < ind1[1] or ind2[0] > ind2[1] or ind3[0] > ind3[1]):
+                return True
+        elif obj_types[0] == "Maximization" and obj_types[1] == "Maximization" and obj_types[2] == "Minimization":
+            if (ind1[0] > ind1[1] or ind2[0] > ind2[1] or ind3[0] < ind3[1]):
+                return True
+        elif obj_types[0] == "Minimization" and obj_types[1] == "Minimization" and obj_types[2] == "Maximization":
+            if (ind1[0] < ind1[1] or ind2[0] < ind2[1] or ind3[0] > ind3[1]):
+                return True
+        elif obj_types[0] == "Maximization" and obj_types[1] == "Minimization" and obj_types[2] == "Maximization":
+            if (ind1[0] > ind1[1] or ind2[0] < ind2[1] or ind3[0] > ind3[1]):
+                return True
+        elif obj_types[0] == "Minimization" and obj_types[1] == "Maximization" and obj_types[2] == "Minimization":
+            if (ind1[0] < ind1[1] or ind2[0] > ind2[1] or ind3[0] < ind3[1]):
+                return True
+        return False
 
-
-    ################################# plotintin initial population  ##################################
-    # fig = plt.figure()
-    # ax = fig.add_subplot(111, projection='3d')
-    # plt.rcParams['font.family'] = "serif"
-    # plt.rcParams["font.serif"] = ["Times New Roman"]
-
-    # # Scatter plot in 3D
-    # ax.scatter(fitnessvalue, fitnessvalue1, fitnessvalue2, c='blue')
-
-    # ax.set_title('Evolution of the best chromosome')
-    # ax.set_xlabel('COP')
-    # ax.set_ylabel('SCP_ads')
-    # ax.set_zlabel('CT')
-
-    # plt.show()
-
-
-
-    # plt.show()
-
-
-    # fitnessvalue  = [objective_function(h) for h in pop]
-    # fitnessvalue1  = [objective_function1(h) for h in pop]
-    # fff = [fitnessvalue ,fitnessvalue1, fitnessvalue2]
-        # if i % 10 == 0 and i > 1:
-        #     print(" iter = " + str(i) + " best fitness = %.3f" % min(bestfitness))
         
 
 
@@ -1024,15 +1028,22 @@ def nsgaa2(table_data, table_data1, task_id):
             for i in range(pop_size):
                 nx = 0
                 
-        
                 for j in range(pop_size):
                     if i != j:
-                        if (fitnessvalue[i] <= fitnessvalue[j] and fitnessvalue1[i] <= fitnessvalue1[j] and fitnessvalue2[i] <= fitnessvalue2[j]): # if fitnessvalue[i] dominates fitnessvalue[j]
+                        if (dominates([fitnessvalue[i], fitnessvalue[j]], [fitnessvalue1[i], fitnessvalue1[j]], [fitnessvalue2[i], fitnessvalue2[j]], table_data2)):
                             Sps[i].append(j)
-                        elif (fitnessvalue[i] < fitnessvalue[j] or fitnessvalue1[i] < fitnessvalue1[j] or fitnessvalue2[i] < fitnessvalue2[j]): # if fitnessvalue[i] is non dominated by fitnessvalue[j]
+                        elif (non_dominates([fitnessvalue[i], fitnessvalue[j]], [fitnessvalue1[i], fitnessvalue1[j]], [fitnessvalue2[i], fitnessvalue2[j]], table_data2)):
                             continue
                         else:
-                            nx = nx + 1      # nx else nx is incremented by 1 indicating the element is dominated by one element
+                            nx = nx + 1 
+                # for j in range(pop_size):
+                #     if i != j:
+                #         if (fitnessvalue[i] <= fitnessvalue[j] and fitnessvalue1[i] <= fitnessvalue1[j] and fitnessvalue2[i] <= fitnessvalue2[j]): # if fitnessvalue[i] dominates fitnessvalue[j]
+                #             Sps[i].append(j)
+                #         elif (fitnessvalue[i] < fitnessvalue[j] or fitnessvalue1[i] < fitnessvalue1[j] or fitnessvalue2[i] < fitnessvalue2[j]): # if fitnessvalue[i] is non dominated by fitnessvalue[j]
+                #             continue
+                #         else:
+                #             nx = nx + 1      # nx else nx is incremented by 1 indicating the element is dominated by one element
                 nxs.append(nx)             # nxs-  number of solution that dominates fitenessvalue[i] 
                 if nx == 0:                         # if nx equal to zero meaning the solution is not dominated by any solution and they belong to the first front or front 1
                     P_rank = 0                     # is  the front one ranking
@@ -1491,9 +1502,602 @@ def create_objective_function(variables, formula):
 
 
 
+#################################################################################################################
+
+#   MAXIMIZATION
+#################################################################################################################
+
+# def nsga2_max(table_data, table_data1, task_id):
+#     time.sleep(1)
+#     table_dataa = []
+#     for sublist in table_data: # Converting the search space from string to ing
+#         row = []
+#         for item in sublist:
+#             if item.isdigit():
+#                 # Convert the string to an integer
+#                 item = int(item)
+#             row.append(item)
+#         table_dataa.append(row)
+#     table_new = table_dataa
+#     dv = [] # retrieving only the decision variables
+#     for k in range(len(table_new)):
+#         dv.append(table_new[k][0])
+
+#     pop_size = 100
+#     # bounds = [[table_new[0][1], table_new[0][2]], [table_new[1][1], table_new[1][2]], [table_new[2][1],table_new[2][2]]]
+#     bounds = [[row[1], row[2]] for row in table_new]
+
+#     # pop_size = 300
+#     # bounds = [[0, 1], [0, 1],[0,1], [0,1], [0,1], [0,1],[0,1]]#, [0,1], [0,1], [0,1],[0, 1], [0, 1], [0,1], [0,1], [0,1], [0,1],[0,1], [0,1], [0,1], [0,1],[0, 1], [0, 1], [0,1], [0,1], [0,1], [0,1],[0,1], [0,1], [0,1], [0,1]]
+
+
+#     nv = len(bounds)
+#     # print(nv)
+
+#     iteration = 150
 
 
 
+#     crossover_rate = 1.0
+#     mutation_rate = 1/nv
+#     ita_c = 30
+#     ita_m = 20
+#     # nv = 30
+
+
+
+#     ghk = []
+
+
+
+
+#     newpopfit = []
+
+
+#     pop_posi = []
+#     def posi(bounds, pop_size):
+#         for i in range(pop_size and len(bounds)):
+#             x = (bounds[i][0] + np.random.rand(pop_size)*(bounds[i][1]-bounds[i][0])).tolist()
+#             pop_posi.append(x)
+            
+#         return pop_posi
+#     pops= posi(bounds, pop_size)
+#     # print(classpop)
+
+#     popss = list(zip(*pops))
+
+#     # print(classpopp)
+#     pop = [list(ele) for ele in popss]
+#     #pop = [[0.913, 2.181], [0.599, 2.450],[0.139, 1.157],[0.867, 1.505],[0.885, 1.239],[0.658,2.040],[0.788, 2.166],[0.342, 0.756]]
+#     #pop = [[0.913, 2.181], [0.599, 2.450],[0.139, 1.157],[0.867, 1.505],[0.885, 1.239],[0.658,2.040],[0.788, 2.166],[0.342, 0.756]]
+
+#     # def objective_function(I):
+#     #     x1 = I[0]
+#     #     objective_max = x1
+#     #     return objective_max
+#     # fitnessvalue  = [objective_function(h) for h in pop]
+
+#     # def objective_function1(I):
+#     #     x1 = I[0]
+#     #     x2 = I[1]
+
+#     #     objective_max = 1 + x2 - (x1)**2
+#     #     return objective_max
+
+#     # fitnessvalue1  = [objective_function1(h) for h in pop]
+
+#     objective_function = create_objective_function(dv, table_data1[0])
+#     objective_function1 = create_objective_function(dv, table_data1[1])
+#     # objective_function2 = create_objective_function(dv, table_data1[2])
+
+#     # fitnessvalue = [objective_function(h) for h in pop]
+#     # fitnessvalue1 = [objective_function1(h) for h in pop]
+#     # fitnessvalue2 = [objective_function2(h) for h in pop]
+
+#     # nxt_gen_fit1 = [objective_function(h) for h in pop]
+#     # nxt_gen_fit2 = [objective_function1(h) for h in pop]
+#     # nxt_gen_fit3 = [objective_function2(h) for h in pop]
+#     # # socketio.emit('update', {'fit1': fitnessvalue, 'fit2': fitnessvalue1})
+#     # try:
+#     #     socketio.emit('update', {'nxt_gen_fit1': nxt_gen_fit1, 'nxt_gen_fit2': nxt_gen_fit2, 'nxt_gen_fit3': nxt_gen_fit3})
+#     #     # print('Update event emitted successfully')
+#     # except Exception as e:
+#     #     print('Error emitting update event:', str(e))
+
+
+#     ################################# plotintin initial population  ##################################
+#     # fig = plt.figure()
+#     # ax = fig.add_subplot(111, projection='3d')
+#     # plt.rcParams['font.family'] = "serif"
+#     # plt.rcParams["font.serif"] = ["Times New Roman"]
+
+#     # # Scatter plot in 3D
+#     # ax.scatter(fitnessvalue, fitnessvalue1, fitnessvalue2, c='blue')
+
+#     # ax.set_title('Evolution of the best chromosome')
+#     # ax.set_xlabel('COP')
+#     # ax.set_ylabel('SCP_ads')
+#     # ax.set_zlabel('CT')
+
+#     # plt.show()
+
+
+
+#     # plt.show()
+
+
+#     # fitnessvalue  = [objective_function(h) for h in pop]
+#     # fitnessvalue1  = [objective_function1(h) for h in pop]
+#     # fff = [fitnessvalue ,fitnessvalue1, fitnessvalue2]
+#         # if i % 10 == 0 and i > 1:
+#         #     print(" iter = " + str(i) + " best fitness = %.3f" % min(bestfitness))
+        
+
+
+#         ######## STAGE 1 (FAST NON DOMINATED SORTING) #################################################
+
+
+
+#     #     ############# CROWDINGIN DISTANCE ########################################
+
+#     ita_count = 0 
+#     for zz in range(iteration):
+#         fitnessvalue  = [objective_function(h) for h in pop]
+#         fitnessvalue1  = [objective_function1(h) for h in pop]
+#         # fitnessvalue2  = [objective_function2(h) for h in pop]
+#         fff = [fitnessvalue, fitnessvalue1]
+
+        
+#         def fronting(pop_size,fitnessvalue ,fitnessvalue1): #### DOMINANT DEPTH METHOD
+#             Fs = []
+#             for v in range(pop_size):
+#                 Fs.append([])
+
+#             Sps = []                   # Sps is the vector containing all solutions being dominated by a particular solution
+#             for g in range(pop_size):
+#                 Sps.append([])
+
+#             nxs = []                   # nxs is the vector containing the numbers of solution dominating a particular solution
+#             # for g in range(pop_size):
+#             #     nxs.append([])
+
+            
+                
+                
+#             for i in range(pop_size):
+#                 nx = 0
+                
+        
+#                 for j in range(pop_size):
+#                     if i != j:
+#                         if (fitnessvalue[i] >= fitnessvalue[j] and fitnessvalue1[i] >= fitnessvalue1[j]): # if fitnessvalue[i] dominates fitnessvalue[j]
+#                             Sps[i].append(j)
+#                         elif (fitnessvalue[i] > fitnessvalue[j] or fitnessvalue1[i] > fitnessvalue1[j]): # if fitnessvalue[i] is non dominated by fitnessvalue[j]
+#                             continue
+#                         else:
+#                             nx = nx + 1      # nx else nx is incremented by 1 indicating the element is dominated by one element
+#                 nxs.append(nx)             # nxs-  number of solution that dominates fitenessvalue[i] 
+#                 if nx == 0:                         # if nx equal to zero meaning the solution is not dominated by any solution and they belong to the first front or front 1
+#                     P_rank = 0                     # is  the front one ranking
+#                     Fs[P_rank].append([i])         # Fs is the matrix containing the fronts of all solutin
+
+
+        
+
+                
+
+
+
+
+#             ######## STAGE 2 (FAST NON DOMINATED SORTING)###########
+
+#             b = 0
+#             bb = 0
+#             q = []
+#             while Fs[b] != []:
+#                 Q = []
+#                 for w in range(len(Fs[b])):
+#                     ee = Fs[b][w][bb]  #extracting the solutions from the first front
+
+#                     q.append(Sps[ee])   #extracting the solutions of the Sps of the first front solutions
+            
+#                 q = [item for sublist in q for item in sublist] # FLATENED q
+                
+#                 for g in range(len(q)):
+#                     ee1 =  q[g]                     #extracting the solutions from list q
+#                     nxs[ee1]= (nxs[ee1]) - 1    # the solutions of list q has values in nxs , so extracting it and substracting 1 as per the algorigthm 
+#                     if nxs[ee1] == 0 : 
+#                         q_rank = b + 1
+#                         Q.append([ee1])
+#                 b = b +1
+#                 q = []
+#                 Fs[b] = Q
+#             return Fs
+#         fronts = fronting(pop_size,fitnessvalue ,fitnessvalue1)
+#     # print(fronts)
+#     ################## END OF (FAST NON DOMINATED SORTING) THIS HELPS I CONVERGANCE OF THE SOLUTION ###############################
+
+#         def cdist(fronts, pop_size, fff):
+#             fronts = [i for i in fronts if i != []]
+#             no_obj = 2
+#             fit_ = []
+
+#             sot_sols = []
+#             Cd_sol = [0] * pop_size
+#             ds1 = []
+
+#             for tt in range(len(fronts)):
+#                 r = len(fronts[tt])
+#                 for n in range(no_obj):
+#                     fit_.append([])
+#                 for m in range(no_obj):
+#                     for j in range(r):
+#                         ee2 = fronts[tt][j][0] #extracting the solutions in the fronts
+#                         fit_[m].append(fff[m][ee2]) #extracting the fitness values of the solutions
+
+#                     sot_sol = []
+                
+#                     for cc in range(r):
+#                         fitidx = fit_[m].index(sorted(fit_[m])[cc])
+#                         sot_sol.append(fronts[tt][fitidx][0])
+#                     fit_[m] = sorted(fit_[m])
+
+#                     Cd_sol[sot_sol[0]] = Cd_sol[sot_sol[-1]] = float('inf') # Assigning a large value (inf) to the extrem solutions
+
+#                     for w in range(1, r - 1):
+#                         if max(fit_[m]) == min(fit_[m]):
+#                             pass # Cd_sol[sot_sol[w]] = 0
+#                         else:
+#                             Cd_sol[sot_sol[w]] += abs(fit_[m][w + 1] - fit_[m][w - 1]) / (max(fit_[m]) - min(fit_[m]))  #computing the crowding distance
+
+#                     sot_sols.append(sot_sol)
+#                 fit_ = []
+
+#             return Cd_sol, sot_sols
+
+#         crwdist = cdist(fronts,pop_size,fff)
+#         Cd_sol = crwdist[0]
+#         # print('Cd_sol',Cd_sol)
+#         sot_sols = crwdist[1]
+#         # print('sot_sols',sot_sols)
+
+#         def ranking(sol1):
+#             rank = 5000
+#             for w in range(len(fronts)):
+#                 for v in range(len(fronts[w])):
+#                     if sol1 == fronts[w][v][0]:
+#                         rank = w
+#             return rank
+
+        
+#         def tornament(pop_size,ranking,Cd_sol):
+#             sols = list(range(len(Cd_sol)))
+#             random.shuffle(sols)
+#             mating_pool = []
+            
+#             b = 0
+#             for n in range(pop_size-1):
+#                 candidate0 = sols[n]
+#                 candidate1 = sols[n+1]
+#                 R_0 = ranking(candidate0)
+#                 R_1 = ranking(candidate1)
+#                 win = min(R_0, R_1)
+                
+#                 if R_0 < R_1 :
+#                     mating_pool.append(candidate0)
+                
+#                 elif R_1 < R_0:
+#                     mating_pool.append(candidate1)
+#                 elif R_0 == R_1:
+#                     W_0 = Cd_sol[sols[n]]
+#                     W_1 = Cd_sol[sols[n+1]]
+#                     if W_0 > W_1:
+#                         mating_pool.append(candidate0)
+#                     elif W_1 > W_0:
+#                         mating_pool.append(candidate1)
+#                     else :
+#                         W_0 == W_1
+#                         co = [candidate0,candidate1]
+#                         mating_pool.append(random.choice(co))
+                
+#             candidatex = sols[-1]
+#             candidatey = sols[0]
+#             R_x = ranking(candidatex)
+#             R_y = ranking(candidatey)
+#             win = min(R_x, R_y)
+                
+#             if R_x < R_y :
+#                 mating_pool.append(candidatex)
+            
+#             elif R_y < R_x:
+#                 mating_pool.append(candidatey)
+#             elif R_x == R_y:
+#                 W_x = Cd_sol[sols[0]]
+#                 W_y = Cd_sol[sols[-1]]
+#                 if W_x > W_y:
+#                     mating_pool.append(candidatex)
+#                 elif W_y > W_x:
+#                     mating_pool.append(candidatey)
+#                 else :
+#                     W_x == W_y
+#                     co = [candidatex,candidatey]
+#                     mating_pool.append(random.choice(co))
+#             return mating_pool
+#         winner = tornament(pop_size,ranking,Cd_sol)
+#         # winnerz = []
+#         # for e in range(len(winner)):
+#         #     winnerz.append(fitnessvalue1 [winner[e]])
+#         pp = []
+#         for e in range(len(winner)):
+#             pp.append(pop[winner[e]])
+
+
+#         ############################### SBX (SIMULATED BINARY CROSSOVER) ##################################
+#                 ### USE FOR GENERATING NOW OFFSPRING OR SOLUTION /EXPLORES THE SEARCH SPACE
+#         ###################################################################################################
+
+#         def crossover(pp, crossover_rate):
+#             palen = len(pp)    # lenght of parent
+#             iidx = list(range(pop_size))
+#             random.shuffle(iidx)
+#             pp =  [pp[i] for i in iidx]
+#             cofs = []
+#             u = []
+#             betas = []
+            
+#             for i in range(0, pop_size, 2):   
+#                 O1 = []
+#                 O2 = []
+#                 if random.random()  < crossover_rate:
+#                     for y in range(len(bounds)):
+
+#                         ux = random.random()
+#                         if ux <= 0.5:
+#                             beta = (2 * ux)**(1/(ita_c+1))
+#                         else:
+#                             beta = (1/(2*(1-ux)))**(1/(ita_c+1))
+
+#                         bn1 = 0.5 * ((1 + beta) * pp[i][y]) +(1 - beta) * pp[i+1][y]
+#                         bn2 = 0.5 * ((1 - beta) * pp[i][y]) +(1 + beta) * pp[i+1][y]
+
+#                         O1.append(bn1)
+#                         O2.append(bn2)
+#                     cofs.append(O1)
+#                     cofs.append(O2)
+#                 else:
+#                     cofs.append(pp[i])
+#                     cofs.append(pp[i+1])
+#             return cofs
+#         nin = crossover(pp, crossover_rate)
+#         # print('nin', nin)
+#         for k in range(pop_size):
+#             for j in range(len(bounds)):
+#                 if nin[k][j] < bounds[j][0]:
+#                     nin[k][j] = bounds[j][0]
+
+#                 if nin[k][j] > bounds[j][1]:
+#                     nin[k][j] = bounds[j][1]
+# ###########################################################################################################
+
+# ##                               POLYNOMIAL MUTATION
+#                             # USE FOR CREATE MORE EXPLOITING THE SEARCH SPACE
+# ###########################################################################################################
+#         def mutation(nin, mutation_rate):
+#             deltax = []
+#             u1 = []
+#             Oms = []
+            
+#             for i in range(len(nin)):
+#                 OO1 = []
+#                 # nin[i]
+#                 if random.random() < mutation_rate:
+                
+#                     for m in range(len(bounds)):
+#                         uxx = random.random()
+#                         if uxx < 0.5:
+#                             delta = ((2 * uxx)**(1/(ita_m+1))) - 1 
+#                         else:
+#                             delta = 1 - (2 * (1 - uxx))**(1/ita_m+1)
+
+#                         O_1 = nin[i][m] + (bounds[m][1] - bounds[m][0]) * delta
+#                         OO1.append(O_1)
+#                     Oms.append(OO1)
+#                 else:
+#                     Oms.append(nin[i])    
+#             return Oms
+
+#         firstoffsrping = mutation(nin, mutation_rate)
+#         # print('fistoff', firstoffsrping )
+
+#         for w in range(pop_size):
+#             for x in range(len(bounds)):
+#                 if firstoffsrping[w][x] < bounds[x][0]:
+#                     firstoffsrping[w][x] = bounds[x][0]
+
+#                 if firstoffsrping[w][x] > bounds[x][1]:
+#                     firstoffsrping[w][x] = bounds[x][1]
+#         fitnessiffso = [objective_function(r) for r in firstoffsrping]
+#         fitnessiffso1 = [objective_function1(r) for r in firstoffsrping]
+#         # fitnessiffso2 = [objective_function2(r) for r in firstoffsrping]
+
+#         # SELECTION PROCEDURES FOR THE NEXT GENERATION SURVIVAL OR ELIMINATION SCHEME ##################
+#         Uh = fitnessiffso, fitnessvalue  ## COMBINING FITNESS VALUE OF THE FIRST OBJECTIVE OF BOTH THE PARRENT FITNESS AND THE OFFSPRING
+#         Uh1 = fitnessiffso1, fitnessvalue1  ## COMBINING FITNESS VALUE OF THE SECOND OBJECTIVE OF BOTH THE PARRENT FITNESS AND THE OFFSPRING
+#         # Uh2 = fitnessiffso2, fitnessvalue2  
+#         Uh = [element for sub in Uh for element in sub]  #FLATING THE TWO LIST
+#         Uh1 = [element for sub in Uh1 for element in sub] # FLATING THE TWO LIST
+#         # Uh2 = [element for sub in Uh2 for element in sub]
+
+
+#         Uh_1 = fitnessiffso, fitnessvalue  
+#         Uh1_1 =  fitnessiffso1, fitnessvalue1 
+#         # Uh2_2 =  fitnessiffso2, fitnessvalue2 
+#         fff1 = [Uh ,Uh1]
+
+#         combinfronting = fronting(pop_size*2, Uh, Uh1)
+  
+#         combcdist = cdist(combinfronting ,pop_size*2,fff1)
+#         Cd_sol1 = combcdist[0]
+#         sot_sols1 = combcdist[1]
+#         def check(listt, val):
+#             """ checks if all crowding distance is infinity """
+#             bn = 0
+#             for xc in range(len(listt)):
+#                 if val ==  listt[xc]:
+#                     bn = bn +1
+#                 if bn == len(listt):
+#                     return True
+#             return False
+#         def makedub(xi):
+#             """ makes a list, list of list  as requiered"""
+#             xh =  [[t] for t in xi]
+#             return xh
+#         # # nxt_gensize == pop_size
+#         # val = float('inf')
+#         # listtt = [float('inf'), float('inf') ]
+#         # gggg = check(listtt, val)
+#         nxt_gen = []
+#         for d in range(len(combinfronting)):
+
+            
+#             L1 = len(combinfronting[d])     # length of the combined front
+#             L2 = sum([len(k) for k in nxt_gen])   # cal the remaining slot needed to fill the required population
+#             if L1 <= pop_size - L2:
+#                 # combinfronting[d]= [i for sublist in combinfronting[d] for i in sublist]
+#                 nxt_gen.append(combinfronting[d])     # Add the entire front if it fits within the population size
+#                 # nxt_gen = [i for sublist in nxt_gen for i in sublist]
+                
+#                 L2 = sum([len(k) for k in nxt_gen])   # recalculate the remaining slot needed to complete the require pop size
+#                 if L2 < pop_size:
+#                     continue
+#                 else:
+#                     L2 == pop_size
+#                     break
+#             else:
+#                 L1 > pop_size - L2   # when the combinedfronting[?] is greater than the remaining slot, the we have to employ crowding distance 
+#                 solcmdist = []          # crowding distance of the solutions 
+#                 for m in range(len(combinfronting[d])):
+#                     solcmdist.append(combcdist[0][combinfronting[d][m][0]]) 
+#                 che1 = check(solcmdist, float('inf')) # Checking if all crowd distance is infinity
+#                 if che1 == True:    # if so that means we would select the remaining slot randomly
+#                     sunn = pop_size-L2
+#                     flt = [i for sublist in combinfronting[d] for i in sublist]   # flated combinfronting[3]
+#                     if sunn > len(flt):
+#                         sunn = len(flt)
+#                     sel = np.random.choice(flt, size = sunn, replace = False) # sel --- selecting solution to complete population
+#                     sel = list(sel) 
+#                     sel = makedub(sel)
+#                     # for a1 in range(len(sel)):
+#                     nxt_gen.append(sel)
+#                 else:
+                        
+#                     copi_solcmdist = copy.copy(solcmdist)
+#                     sort_solcmdist = solcmdist.sort(reverse=True)
+#                     sort_solu = []
+#                     for y in range(len(combinfronting[d])):
+#                         indx = copi_solcmdist .index(solcmdist[y])
+#                         new1 = combinfronting[d][indx][0]
+#                         sort_solu.append(new1)
+#                     indx_rep = [i for i, val in enumerate(copi_solcmdist) if val in copi_solcmdist[:i]]  #### repeated index
+#                     indx_rep1 = [y for y, val in enumerate(solcmdist) if val in solcmdist[:y]] 
+#                     for u in range(len(indx_rep)):
+#                         if solcmdist[u] == solcmdist[u+1]:
+#                             new1 = combinfronting[d][indx_rep[u]][0]
+#                             sort_solu.insert(indx_rep1[u], new1)
+#                             del sort_solu[indx_rep1[u]+1]
+                    
+#                     # sort_solu = list(sort_solu)
+#                     xx = sort_solu[0:(pop_size- L2)]
+#                     xx = makedub(xx)
+                        
+#                     nxt_gen.append(xx)
+#                     L2 = sum([len(k) for k in nxt_gen])
+#                     if L2 < pop_size:
+#                         continue
+#                     else:
+#                         L2 == pop_size
+#                         break
+#             if len(combinfronting[0]) == pop_size * 2:
+#                 copi_solcmdist = copy.copy(solcmdist)
+#                 sort_solcmdist = solcmdist.sort(reverse=True)
+#                 sort_solu = []
+#                 for y in range(len(combinfronting[d])):
+#                     indx = copi_solcmdist .index(solcmdist[y])
+#                     new1 = combinfronting[d][indx][0]
+#                     sort_solu.append(new1)
+#                 indx_rep = [i for i, val in enumerate(copi_solcmdist) if val in copi_solcmdist[:i]]  #### repeated index
+#                 indx_rep1 = [y for y, val in enumerate(solcmdist) if val in solcmdist[:y]] 
+#                 for u in range(len(indx_rep)):
+#                     if solcmdist[u] == solcmdist[u+1]:
+#                         new1 = combinfronting[d][indx_rep[u]][0]
+#                         sort_solu.insert(indx_rep1[u], new1)
+#                         del sort_solu[indx_rep1[u]+1]
+                
+#                 # sort_solu = list(sort_solu)
+#                 xx = sort_solu[0: pop_size]
+#                 xx = makedub(xx)
+                    
+#                 nxt_gen.append(xx)
+#     ##################################################################### new codes ##########################
+    
+        
+    
+#         popcomb = firstoffsrping + pop
+
+#         nxt_gen = [i for sublist in nxt_gen for i in sublist]
+#         nxt_gen = [i for sublist in nxt_gen for i in sublist]
+#         nxt_gen_pop = []
+#         for m in range(len(nxt_gen)):
+
+#             nxt_gen_pop.append(popcomb[nxt_gen[m]])
+
+#         nxt_gen_fit1 = []
+#         for n in range(len(nxt_gen)):
+
+#             nxt_gen_fit1.append(Uh[nxt_gen[n]])
+
+#         nxt_gen_fit2 = []
+#         for n in range(len(nxt_gen)):
+
+#             nxt_gen_fit2.append(Uh1[nxt_gen[n]])
+
+
+        
+    
+    
+#         # hn = fronting(pop_size,nxt_gen_fit1 ,nxt_gen_fit2)
+
+#     ##################################################################################################################
+        
+    
+#         # fffv = [nxt_gen_fit1,nxt_gen_fit2]
+        
+#         pop = nxt_gen_pop
+#         fff = []
+#         # fronts[0]
+#         # print(fronts[0])
+#         # fffv = [nxt_gen_fit1,nxt_gen_fit2]
+#         # print(fffv)
+
+#         xx = fronting(pop_size,nxt_gen_fit1, nxt_gen_fit2)
+#         try:
+#             socketio.emit('update', {'nxt_gen_fit1': nxt_gen_fit1, 'nxt_gen_fit2': nxt_gen_fit2})
+#             # print('Update event emitted successfully')
+#         except Exception as e:
+#             print('Error emitting update event:', str(e))
+#         # print('xx3', xx[0])
+#         # print('xx', xx)
+#         ita_count = ita_count + 1
+#         # print('ita_count', ita_count)
+#     result_data = {
+#         'opti_front_obj1': nxt_gen_fit1,
+#         'opti_front_obj2': nxt_gen_fit2,
+#         # 'opti_front_obj3': nxt_gen_fit3,
+#         'opti_para': pop
+#     }
+    
+#     with task_results_lock:
+#         task_results[task_id] = result_data
 
 
 
