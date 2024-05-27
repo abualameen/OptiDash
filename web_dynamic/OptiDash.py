@@ -104,13 +104,28 @@ def home():
     if request.method == "POST":
         try:
             data = request.get_json()
-            decision_variables = [sublist[0] for sublist in data.get('tableData')]
+            import re
+
+
+            def tokenize(expression):
+                # Define a regex pattern to match variables (e.g., x1), operators, and numbers
+                pattern = re.compile(r'(\b\w+\b|[+\-*/()**])')
+                tokens = pattern.findall(expression)
+                return tokens
+
+            def flatten_expressions(objective_function_list):
+                flattened = []
+                for expr in objective_function_list:
+                    flattened.extend(tokenize(expr))
+                return flattened
+
+            # Example input
             objective_function_list = data.get('tableData1')
-            # Flatten the list of objective functions
-            objective_functions = [item for sublist in objective_function_list for item in sublist]
-            # Check if each decision variable appears in the objective function list
+            decision_variables = [sublist[0] for sublist in data.get('tableData')]
+            # Flatten the expressions
+            flattened = flatten_expressions(objective_function_list)
             for element in decision_variables:
-                if element not in objective_functions:
+                if element not in flattened:
                     flash("Decision variables must appear exactly in the same way in the objective function", "danger")
                     return render_template('home.html')
 
@@ -197,21 +212,26 @@ def contact_us():
     return render_template('contact_us.html')
 
 
-def nsga2(table_data, table_data1, table_data2, task_id):
+def nsga2(table_data, table_data1, table_data2, task_id, test_mode=False):
     """
     implementation of NSGAII for two objectives
     """
     time.sleep(1)
-    table_dataa = []
-    for sublist in table_data: # Converting the search space from string to ing
-        row = []
-        for item in sublist:
-            if item.isdigit():
-                # Convert the string to an integer
-                item = int(item)
-            row.append(item)
-        table_dataa.append(row)
-    table_new = table_dataa
+    
+    def con_str_int(table_dat):
+        table_dataa = []
+        for sublist in table_dat: # Converting the search space from string to ing
+            row = []
+            for item in sublist:
+                if item.isdigit():
+                    # Convert the string to an integer
+                    item = int(item)
+                row.append(item)
+            table_dataa.append(row)
+        return table_dataa
+    table_new = con_str_int(table_data)
+
+
     dv = [] # retrieving only the decision variables
     for k in range(len(table_new)):
         dv.append(table_new[k][0])
@@ -240,44 +260,10 @@ def nsga2(table_data, table_data1, table_data2, task_id):
     objective_function1 = create_objective_function(dv, table_data1[1])
         ######## STAGE 1 (FAST NON DOMINATED SORTING) #################################################
     #     ############# CROWDINGIN DISTANCE ########################################
-    def dominates1(ind1, ind2, obj_types):
-        """
-        Return True if ind1 dominates ind2 
-        based on objective types. allow for
-        dynamic selection of objectives
-        
-        """
-        if obj_types[0] == "Minimization" and obj_types[1] == "Minimization":
-            if (ind1[0] <= ind1[1] and ind2[0] <= ind2[1]):
-                return True
-        elif obj_types[0] == "Maximization" and obj_types[1] == "Maximization":
-            if (ind1[0] >= ind1[1] and ind2[0] >= ind2[1]):
-                return True
-        elif obj_types[0] == "Minimization" and obj_types[1] == "Maximization":
-            if (ind1[0] <= ind1[1] and ind2[0] >= ind2[1]):
-                return True
-        elif obj_types[0] == "Maximization" and obj_types[1] == "Minimization":
-            if (ind1[0] >= ind1[1] and ind2[0] <= ind2[1]):
-                return True
-        return False
+   
+    
 
-    def non_dominates1(ind1, ind2, obj_types):
-        """Return True if ind1 dominates ind2 based on objective types.
-            allows for dynamic selection of objectives
-        """
-        if obj_types[0] == "Minimization" and obj_types[1] == "Minimization":
-            if (ind1[0] < ind1[1] or ind2[0] < ind2[1]):
-                return True
-        elif obj_types[0] == "Maximization" and obj_types[1] == "Maximization":
-            if (ind1[0] > ind1[1] or ind2[0] > ind2[1]):
-                return True
-        elif obj_types[0] == "Minimization" and obj_types[1] == "Maximization":
-            if (ind1[0] < ind1[1] or ind2[0] > ind2[1]):
-                return True
-        elif obj_types[0] == "Maximization" and obj_types[1] == "Minimization":
-            if (ind1[0] > ind1[1] or ind2[0] < ind2[1]):
-                return True
-        return False
+
 
     ita_count = 0 
     for zz in range(iteration):
@@ -509,17 +495,7 @@ def nsga2(table_data, table_data1, table_data2, task_id):
         combcdist = cdist(combinfronting ,pop_size*2,fff1)
         Cd_sol1 = combcdist[0]
         sot_sols1 = combcdist[1]
-        def check(listt, val):
-            bn = 0
-            for xc in range(len(listt)):
-                if val ==  listt[xc]:
-                    bn = bn +1
-                if bn == len(listt):
-                    return True
-            return False
-        def makedub(xi):
-            xh =  [[t] for t in xi]
-            return xh
+
         nxt_gen = []
         for d in range(len(combinfronting)):
 
@@ -676,61 +652,7 @@ def nsgaa2(table_data, table_data1, table_data2, task_id):
     objective_function1 = create_objective_function(dv, table_data1[1])
     objective_function2 = create_objective_function(dv, table_data1[2])
 
-    def dominates(ind1, ind2, ind3, obj_types):
-        """Return True if ind1 dominates ind2 based on objective types."""
-        if obj_types[0] == "Minimization" and obj_types[1] == "Minimization" and obj_types[2] == "Minimization":
-            if (ind1[0] <= ind1[1] and ind2[0] <= ind2[1] and ind3[0] <= ind3[1]):
-                return True
-        elif obj_types[0] == "Maximization" and obj_types[1] == "Maximization" and obj_types[2] == "Maximization":
-            if (ind1[0] >= ind1[1] and ind2[0] >= ind2[1] and ind3[0] >= ind3[1]):
-                return True
-        elif obj_types[0] == "Maximization" and obj_types[1] == "Minimization" and obj_types[2] == "Minimization":
-            if (ind1[0] >= ind1[1] and ind2[0] <= ind2[1] and ind3[0] <= ind3[1]):
-                return True
-        elif obj_types[0] == "Minimization" and obj_types[1] == "Maximization" and obj_types[2] == "Maximization":
-            if (ind1[0] <= ind1[1] and ind2[0] >= ind2[1] and ind3[0] >= ind3[1]):
-                return True
-        elif obj_types[0] == "Maximization" and obj_types[1] == "Maximization" and obj_types[2] == "Minimization":
-            if (ind1[0] >= ind1[1] and ind2[0] >= ind2[1] and ind3[0] <= ind3[1]):
-                return True
-        elif obj_types[0] == "Minimization" and obj_types[1] == "Minimization" and obj_types[2] == "Maximization":
-            if (ind1[0] <= ind1[1] and ind2[0] <= ind2[1] and ind3[0] >= ind3[1]):
-                return True
-        elif obj_types[0] == "Maximization" and obj_types[1] == "Minimization" and obj_types[2] == "Maximization":
-            if (ind1[0] >= ind1[1] and ind2[0] <= ind2[1] and ind3[0] >= ind3[1]):
-                return True
-        elif obj_types[0] == "Minimization" and obj_types[1] == "Maximization" and obj_types[2] == "Minimization":
-            if (ind1[0] <= ind1[1] and ind2[0] >= ind2[1] and ind3[0] <= ind3[1]):
-                return True
-        return False
-
-    def non_dominates(ind1, ind2, ind3, obj_types):
-        """Return True if ind1 dominates ind2 based on objective types."""
-        if obj_types[0] == "Minimization" and obj_types[1] == "Minimization" and obj_types[2] == "Minimization":
-            if (ind1[0] < ind1[1] or ind2[0] < ind2[1] or ind3[0] < ind3[1]):
-                return True
-        elif obj_types[0] == "Maximization" and obj_types[1] == "Maximization" and obj_types[2] == "Maximization":
-            if (ind1[0] > ind1[1] or ind2[0] > ind2[1] or ind3[0] > ind3[1]):
-                return True
-        elif obj_types[0] == "Maximization" and obj_types[1] == "Minimization" and obj_types[2] == "Minimization":
-            if (ind1[0] > ind1[1] or ind2[0] < ind2[1] or ind3[0] < ind3[1]):
-                return True
-        elif obj_types[0] == "Minimization" and obj_types[1] == "Maximization" and obj_types[2] == "Maximization":
-            if (ind1[0] < ind1[1] or ind2[0] > ind2[1] or ind3[0] > ind3[1]):
-                return True
-        elif obj_types[0] == "Maximization" and obj_types[1] == "Maximization" and obj_types[2] == "Minimization":
-            if (ind1[0] > ind1[1] or ind2[0] > ind2[1] or ind3[0] < ind3[1]):
-                return True
-        elif obj_types[0] == "Minimization" and obj_types[1] == "Minimization" and obj_types[2] == "Maximization":
-            if (ind1[0] < ind1[1] or ind2[0] < ind2[1] or ind3[0] > ind3[1]):
-                return True
-        elif obj_types[0] == "Maximization" and obj_types[1] == "Minimization" and obj_types[2] == "Maximization":
-            if (ind1[0] > ind1[1] or ind2[0] < ind2[1] or ind3[0] > ind3[1]):
-                return True
-        elif obj_types[0] == "Minimization" and obj_types[1] == "Maximization" and obj_types[2] == "Minimization":
-            if (ind1[0] < ind1[1] or ind2[0] > ind2[1] or ind3[0] < ind3[1]):
-                return True
-        return False
+    
         ######## STAGE 1 (FAST NON DOMINATED SORTING) #################################################
     #     ############# CROWDINGIN DISTANCE ########################################
     ita_count = 0 
@@ -978,22 +900,6 @@ def nsgaa2(table_data, table_data1, table_data2, task_id):
         combcdist = cdist(combinfronting ,pop_size*2,fff1)
         Cd_sol1 = combcdist[0]
         sot_sols1 = combcdist[1]
-        def check(listt, val):
-            """ check is the element of the list are all same """
-            bn = 0
-            for xc in range(len(listt)):
-                if val ==  listt[xc]:
-                    bn = bn +1
-                if bn == len(listt):
-                    return True
-            return False
-        def makedub(xi):
-            """
-            makes a list a list of list
-            """
-            xh =  [[t] for t in xi]
-            return xh
-
         nxt_gen = []
         for d in range(len(combinfronting)): 
             L1 = len(combinfronting[d])
@@ -1118,6 +1024,113 @@ def create_objective_function(variables, formula):
     # Return the dynamically created function
     return local_dict['objective_function']
 
+def dominates1(ind1, ind2, obj_types):
+    """
+    Return True if ind1 dominates ind2 
+    based on objective types. allow for
+    dynamic selection of objectives
+    
+    """
+    if obj_types[0] == "Minimization" and obj_types[1] == "Minimization":
+        if (ind1[0] <= ind1[1] and ind2[0] <= ind2[1]):
+            return True
+    elif obj_types[0] == "Maximization" and obj_types[1] == "Maximization":
+        if (ind1[0] >= ind1[1] and ind2[0] >= ind2[1]):
+            return True
+    elif obj_types[0] == "Minimization" and obj_types[1] == "Maximization":
+        if (ind1[0] <= ind1[1] and ind2[0] >= ind2[1]):
+            return True
+    elif obj_types[0] == "Maximization" and obj_types[1] == "Minimization":
+        if (ind1[0] >= ind1[1] and ind2[0] <= ind2[1]):
+            return True
+    return False
+
+def non_dominates1(ind1, ind2, obj_types):
+    """Return True if ind1 dominates ind2 based on objective types.
+        allows for dynamic selection of objectives
+    """
+    if obj_types[0] == "Minimization" and obj_types[1] == "Minimization":
+        if (ind1[0] < ind1[1] or ind2[0] < ind2[1]):
+            return True
+    elif obj_types[0] == "Maximization" and obj_types[1] == "Maximization":
+        if (ind1[0] > ind1[1] or ind2[0] > ind2[1]):
+            return True
+    elif obj_types[0] == "Minimization" and obj_types[1] == "Maximization":
+        if (ind1[0] < ind1[1] or ind2[0] > ind2[1]):
+            return True
+    elif obj_types[0] == "Maximization" and obj_types[1] == "Minimization":
+        if (ind1[0] > ind1[1] or ind2[0] < ind2[1]):
+            return True
+    return False
+
+def dominates(ind1, ind2, ind3, obj_types):
+    """Return True if ind1 dominates ind2 based on objective types."""
+    if obj_types[0] == "Minimization" and obj_types[1] == "Minimization" and obj_types[2] == "Minimization":
+        if (ind1[0] <= ind1[1] and ind2[0] <= ind2[1] and ind3[0] <= ind3[1]):
+            return True
+    elif obj_types[0] == "Maximization" and obj_types[1] == "Maximization" and obj_types[2] == "Maximization":
+        if (ind1[0] >= ind1[1] and ind2[0] >= ind2[1] and ind3[0] >= ind3[1]):
+            return True
+    elif obj_types[0] == "Maximization" and obj_types[1] == "Minimization" and obj_types[2] == "Minimization":
+        if (ind1[0] >= ind1[1] and ind2[0] <= ind2[1] and ind3[0] <= ind3[1]):
+            return True
+    elif obj_types[0] == "Minimization" and obj_types[1] == "Maximization" and obj_types[2] == "Maximization":
+        if (ind1[0] <= ind1[1] and ind2[0] >= ind2[1] and ind3[0] >= ind3[1]):
+            return True
+    elif obj_types[0] == "Maximization" and obj_types[1] == "Maximization" and obj_types[2] == "Minimization":
+        if (ind1[0] >= ind1[1] and ind2[0] >= ind2[1] and ind3[0] <= ind3[1]):
+            return True
+    elif obj_types[0] == "Minimization" and obj_types[1] == "Minimization" and obj_types[2] == "Maximization":
+        if (ind1[0] <= ind1[1] and ind2[0] <= ind2[1] and ind3[0] >= ind3[1]):
+            return True
+    elif obj_types[0] == "Maximization" and obj_types[1] == "Minimization" and obj_types[2] == "Maximization":
+        if (ind1[0] >= ind1[1] and ind2[0] <= ind2[1] and ind3[0] >= ind3[1]):
+            return True
+    elif obj_types[0] == "Minimization" and obj_types[1] == "Maximization" and obj_types[2] == "Minimization":
+        if (ind1[0] <= ind1[1] and ind2[0] >= ind2[1] and ind3[0] <= ind3[1]):
+            return True
+    return False
+
+def non_dominates(ind1, ind2, ind3, obj_types):
+    """Return True if ind1 dominates ind2 based on objective types."""
+    if obj_types[0] == "Minimization" and obj_types[1] == "Minimization" and obj_types[2] == "Minimization":
+        if (ind1[0] < ind1[1] or ind2[0] < ind2[1] or ind3[0] < ind3[1]):
+            return True
+    elif obj_types[0] == "Maximization" and obj_types[1] == "Maximization" and obj_types[2] == "Maximization":
+        if (ind1[0] > ind1[1] or ind2[0] > ind2[1] or ind3[0] > ind3[1]):
+            return True
+    elif obj_types[0] == "Maximization" and obj_types[1] == "Minimization" and obj_types[2] == "Minimization":
+        if (ind1[0] > ind1[1] or ind2[0] < ind2[1] or ind3[0] < ind3[1]):
+            return True
+    elif obj_types[0] == "Minimization" and obj_types[1] == "Maximization" and obj_types[2] == "Maximization":
+        if (ind1[0] < ind1[1] or ind2[0] > ind2[1] or ind3[0] > ind3[1]):
+            return True
+    elif obj_types[0] == "Maximization" and obj_types[1] == "Maximization" and obj_types[2] == "Minimization":
+        if (ind1[0] > ind1[1] or ind2[0] > ind2[1] or ind3[0] < ind3[1]):
+            return True
+    elif obj_types[0] == "Minimization" and obj_types[1] == "Minimization" and obj_types[2] == "Maximization":
+        if (ind1[0] < ind1[1] or ind2[0] < ind2[1] or ind3[0] > ind3[1]):
+            return True
+    elif obj_types[0] == "Maximization" and obj_types[1] == "Minimization" and obj_types[2] == "Maximization":
+        if (ind1[0] > ind1[1] or ind2[0] < ind2[1] or ind3[0] > ind3[1]):
+            return True
+    elif obj_types[0] == "Minimization" and obj_types[1] == "Maximization" and obj_types[2] == "Minimization":
+        if (ind1[0] < ind1[1] or ind2[0] > ind2[1] or ind3[0] < ind3[1]):
+            return True
+    return False
+
+def check(listt, val):
+    bn = 0
+    for xc in range(len(listt)):
+        if val ==  listt[xc]:
+            bn = bn +1
+        if bn == len(listt):
+            return True
+    return False
+    
+def makedub(xi):
+    xh =  [[t] for t in xi]
+    return xh
 
 if __name__ == '__main__':
     # app.run(host='0.0.0.0', port=5006, debug=True)
