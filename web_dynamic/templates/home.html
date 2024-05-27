@@ -9,6 +9,8 @@ About
     <h2 id="heading">OptiDash</h2>
     <div class="row" style="display: flex;">
         <div class="col-lg-12">
+
+ 
             <form class="form-inline" id="criteriaForm" method="POST"></form>
                 <div class="row input-group" id="criteriaGen">
                     <label id="label_id" for="rows">Number of decision variables</label>
@@ -24,6 +26,13 @@ About
             
 
                 <div class="container-fluid">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                    {% endwith %}
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="table-responsive" id="table-container"></div>

@@ -133,54 +133,69 @@ function submitFormData(event) {
         contentType: 'application/json;charset=UTF-8',
         data: JSON.stringify({ tableData, tableData1, tableData2}),
         success: function (data) {
-            // Prepare data arrays
-            let obj1Values = data.opti_front_obj1; // Assuming this is an array
-            let obj2Values = data.opti_front_obj2; // Assuming this is an array
-            let obj3Values = data.opti_front_obj3 || []; // Assuming this is an array or not provided
-            let params = data.opti_para; // Assuming this is an array
+            try {
+                // Check if data is defined and has the expected properties
+                if (data) {
+                            // Prepare data arrays
+                    let obj1Values = data.opti_front_obj1; 
+                    let obj2Values = data.opti_front_obj2; 
+                    let obj3Values = data.opti_front_obj3 || []; 
+                    let params = data.opti_para;
+                    
+                    function roundToSignificantDigits(num, digits) {
+                        return Number(num).toPrecision(digits);
+                    }
             
-            function roundToSignificantDigits(num, digits) {
-                return Number(num).toPrecision(digits);
-            }
-    
-            // Check if all arrays have the same length
-            if (obj1Values.length === obj2Values.length && (obj3Values.length === 0 || obj3Values.length === obj1Values.length) && params.length === obj1Values.length) {
-                let resultHtml = `
-                    <table border="1">
-                        <thead>
-                            <tr>
-                                <th>Optimal Parameters</th>
-                                <th>Optimal Fitness Value 1</th>
-                                <th>Optimal Fitness Value 2</th>
-                                ${obj3Values.length > 0 ? '<th>Optimal Fitness Value 3</th>' : ''}
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-    
-                for (let i = 0; i < obj1Values.length; i++) {
-                    resultHtml += `
-                        <tr>
-                            <td>[${params[i].map(num => roundToSignificantDigits(num, 4)).join(', ')}]</td>
-                            <td>${roundToSignificantDigits(obj1Values[i], 4)}</td>
-                            <td>${roundToSignificantDigits(obj2Values[i], 4)}</td>
-                            ${obj3Values.length > 0 ? `<td>${roundToSignificantDigits(obj3Values[i], 4)}</td>` : ''}
-                        </tr>
-                    `;
+                    // Check if all arrays have the same length
+                    if (obj1Values.length === obj2Values.length && (obj3Values.length === 0 || obj3Values.length === obj1Values.length) && params.length === obj1Values.length) {
+                        let resultHtml = `
+                            <table border="1">
+                                <thead>
+                                    <tr>
+                                        <th>Optimal Parameters</th>
+                                        <th>Optimal Fitness Value 1</th>
+                                        <th>Optimal Fitness Value 2</th>
+                                        ${obj3Values.length > 0 ? '<th>Optimal Fitness Value 3</th>' : ''}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        `;
+            
+                        for (let i = 0; i < obj1Values.length; i++) {
+                            resultHtml += `
+                                <tr>
+                                    <td>[${params[i].map(num => roundToSignificantDigits(num, 4)).join(', ')}]</td>
+                                    <td>${roundToSignificantDigits(obj1Values[i], 4)}</td>
+                                    <td>${roundToSignificantDigits(obj2Values[i], 4)}</td>
+                                    ${obj3Values.length > 0 ? `<td>${roundToSignificantDigits(obj3Values[i], 4)}</td>` : ''}
+                                </tr>
+                            `;
+                        }
+            
+                        resultHtml += `
+                                </tbody>
+                            </table>
+                        `;
+            
+                        $('#results-container').html(resultHtml);
+                    } else {
+                        $('#results-container').html('<p>Error: Mismatch in data lengths.</p>');
+                    }
+                    // Your existing logic using data
+                } else {
+                    // Handle the case where data is undefined or does not have the expected properties
+                    throw new Error("Unexpected response format or empty data");
                 }
-    
-                resultHtml += `
-                        </tbody>
-                    </table>
-                `;
-    
-                $('#results-container').html(resultHtml);
-            } else {
-                $('#results-container').html('<p>Error: Mismatch in data lengths.</p>');
+            } catch (error) {
+                console.error("Error processing data:", error);
+                // Optionally, show a user-friendly message
+                alert("An error occurred while processing your request. Please check your entries and try again.");
             }
         },
-        error: function (error) {
-            console.error('Error:', error);
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error("AJAX request failed:", textStatus, errorThrown);
+            // Optionally, show a user-friendly message
+            alert("Failed to retrieve data. Please try again later.");
         }
     });
 }

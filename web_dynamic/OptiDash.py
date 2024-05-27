@@ -92,123 +92,98 @@ def logout():
     logout_user()
     return redirect(url_for("login"))
         
-
-
-
-
-
 @app.teardown_appcontext
 def close_db(error):
     """ Remove the current SQLAlchemy Session """
     storage.close()
-
-
-# @socketio.on('result')
-# def handle_data_back(data):
-#     # Process the received data
-#     print('Received data back from client:', data)
-#     return data
 
 @app.route('/home', methods=['GET', 'POST'], strict_slashes=False)
 @login_required
 def home():
     """ this is a index function for the index route """
     if request.method == "POST":
-        data = request.get_json()
-        # print('data:', data)
-        table_data = data.get('tableData')
-        table_data1 = data.get('tableData1')
-        table_data2 = data.get('tableData2')
-        # print('table:', table_data)
-        # print('table1:', table_data1)
-        # outputs = nsga2(table_data, table_data1)
-        # opti_obj1_fit = outputs[0]
-        # opti_obj2_fit = outputs[1]
-        # opti_dv = outputs[2]
+        try:
+            data = request.get_json()
+            decision_variables = [sublist[0] for sublist in data.get('tableData')]
+            objective_function_list = data.get('tableData1')
+            # Flatten the list of objective functions
+            objective_functions = [item for sublist in objective_function_list for item in sublist]
+            # Check if each decision variable appears in the objective function list
+            for element in decision_variables:
+                if element not in objective_functions:
+                    flash("Decision variables must appear exactly in the same way in the objective function", "danger")
+                    return render_template('home.html')
 
-        task_id = str(uuid.uuid4())
-        
-        if len(table_data1) == 2:
-            # socketio.start_background_task(target=nsga2, table_data=table_data, table_data1=table_data1)
-            results = socketio.start_background_task(target=nsga2, table_data=table_data, table_data1=table_data1, table_data2=table_data2, task_id=task_id)
+            table_data = data.get('tableData')
+            table_data1 = data.get('tableData1')
+            table_data2 = data.get('tableData2')
 
-        else:
-            # socketio.start_background_task(target=nsgaa2, table_data=table_data, table_data1=table_data1)
-            results = socketio.start_background_task(target=nsgaa2, table_data=table_data, table_data1=table_data1, table_data2=table_data2, task_id=task_id)
-        
-         # Wait for the task to complete
-        while True:
-            with task_results_lock:
-                if task_id in task_results:
-                    result_data = task_results.pop(task_id)
-                    break
-
-        new_problem = Problems(
-            users_id=current_user.id,
-            objective_functions=table_data1,
-            decision_variables=table_data
-        )
-        storage.new(new_problem)
-        storage.save()
-        problem_id = new_problem.id
-        if len(table_data1) == 2:
-
-            opti_front_obj1 = result_data['opti_front_obj1']
-            opti_front_obj2 = result_data['opti_front_obj2']
-            opti_para = result_data['opti_para']
-            # opti_front_obj3 = None
-
+            print('table_data', table_data)
+            print('table_data1', table_data1)
+            print('table_data2', table_data2)
+            task_id = str(uuid.uuid4())
+            if len(table_data1) == 2:
+                results = socketio.start_background_task(target=nsga2, table_data=table_data, table_data1=table_data1, table_data2=table_data2, task_id=task_id)
+            else:
+                results = socketio.start_background_task(target=nsgaa2, table_data=table_data, table_data1=table_data1, table_data2=table_data2, task_id=task_id)
             
-            # new_problem = Problems(
-            #     users_id=current_user.id,
-            #     objective_functions=table_data1,
-            #     decision_variables=table_data
-            # )
-            # storage.new(new_problem)
-            # storage.save(new_problem)
+            # Wait for the task to complete
+            while True:
+                with task_results_lock:
+                    if task_id in task_results:
+                        result_data = task_results.pop(task_id)
+                        break
 
-            new_result = OptimizationResult(
-                problem_id=problem_id,
+            new_problem = Problems(
                 users_id=current_user.id,
-                opti_front_obj1=opti_front_obj1,
-                opti_front_obj2=opti_front_obj2,
-                # opti_front_obj3=opti_front_obj3,
-                opti_para=opti_para
+                objective_functions=table_data1,
+                decision_variables=table_data
             )
-            storage.new(new_result)
-
-
-            return jsonify({
-                'opti_front_obj1': opti_front_obj1,
-                'opti_front_obj2': opti_front_obj2,
-                'opti_para': opti_para,
-                'message': 'Data recieved succesfully'            
-            })
-        else:
-            opti_front_obj1 = result_data['opti_front_obj1']
-            opti_front_obj2 = result_data['opti_front_obj2']
-            opti_front_obj3 = result_data['opti_front_obj3']
-            opti_para = result_data['opti_para']
-
-        
-            new_result = OptimizationResult(
-                problem_id=problem_id,
-                users_id=current_user.id,
-                opti_front_obj1=opti_front_obj1,
-                opti_front_obj2=opti_front_obj2,
-                opti_front_obj3=opti_front_obj3,
-                opti_para=opti_para
-            )
-            storage.new(new_result)
+            storage.new(new_problem)
             storage.save()
-    
-            return jsonify({
-                'opti_front_obj1': opti_front_obj1,
-                'opti_front_obj2': opti_front_obj2,
-                'opti_front_obj3': opti_front_obj3,
-                'opti_para': opti_para,
-                'message': 'Data recieved succesfully'            
-            })
+            problem_id = new_problem.id
+            if len(table_data1) == 2:
+                opti_front_obj1 = result_data['opti_front_obj1']
+                opti_front_obj2 = result_data['opti_front_obj2']
+                opti_para = result_data['opti_para']
+                new_result = OptimizationResult(
+                    problem_id=problem_id,
+                    users_id=current_user.id,
+                    opti_front_obj1=opti_front_obj1,
+                    opti_front_obj2=opti_front_obj2,
+                    opti_para=opti_para
+                )
+                storage.new(new_result)
+                return jsonify({
+                    'opti_front_obj1': opti_front_obj1,
+                    'opti_front_obj2': opti_front_obj2,
+                    'opti_para': opti_para,
+                    'message': 'Data recieved succesfully'            
+                })
+            else:
+                opti_front_obj1 = result_data['opti_front_obj1']
+                opti_front_obj2 = result_data['opti_front_obj2']
+                opti_front_obj3 = result_data['opti_front_obj3']
+                opti_para = result_data['opti_para']
+                new_result = OptimizationResult(
+                    problem_id=problem_id,
+                    users_id=current_user.id,
+                    opti_front_obj1=opti_front_obj1,
+                    opti_front_obj2=opti_front_obj2,
+                    opti_front_obj3=opti_front_obj3,
+                    opti_para=opti_para
+                )
+                storage.new(new_result)
+                storage.save()
+                return jsonify({
+                    'opti_front_obj1': opti_front_obj1,
+                    'opti_front_obj2': opti_front_obj2,
+                    'opti_front_obj3': opti_front_obj3,
+                    'opti_para': opti_para,
+                    'message': 'Data recieved succesfully'            
+                })
+        except Exception as e:
+            return jsonify({"error": "Internal server error"}), 500
     return render_template('home.html')
 
 @app.route('/about_us', strict_slashes=False)
@@ -265,7 +240,7 @@ def nsga2(table_data, table_data1, table_data2, task_id):
     objective_function1 = create_objective_function(dv, table_data1[1])
         ######## STAGE 1 (FAST NON DOMINATED SORTING) #################################################
     #     ############# CROWDINGIN DISTANCE ########################################
-    def dominates(ind1, ind2, obj_types):
+    def dominates1(ind1, ind2, obj_types):
         """
         Return True if ind1 dominates ind2 
         based on objective types. allow for
@@ -286,7 +261,7 @@ def nsga2(table_data, table_data1, table_data2, task_id):
                 return True
         return False
 
-    def non_dominates(ind1, ind2, obj_types):
+    def non_dominates1(ind1, ind2, obj_types):
         """Return True if ind1 dominates ind2 based on objective types.
             allows for dynamic selection of objectives
         """
@@ -324,9 +299,9 @@ def nsga2(table_data, table_data1, table_data2, task_id):
                 nx = 0             
                 for j in range(pop_size):
                     if i != j:
-                        if (dominates([fitnessvalue[i], fitnessvalue[j]], [fitnessvalue1[i], fitnessvalue1[j]], table_data2)):
+                        if (dominates1([fitnessvalue[i], fitnessvalue[j]], [fitnessvalue1[i], fitnessvalue1[j]], table_data2)):
                             Sps[i].append(j)
-                        elif (non_dominates([fitnessvalue[i], fitnessvalue[j]], [fitnessvalue1[i], fitnessvalue1[j]], table_data2)):
+                        elif (non_dominates1([fitnessvalue[i], fitnessvalue[j]], [fitnessvalue1[i], fitnessvalue1[j]], table_data2)):
                             continue
                         else:
                             nx = nx + 1   
