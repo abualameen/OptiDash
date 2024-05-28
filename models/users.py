@@ -12,9 +12,10 @@ class Users(BaseModel, Base):
     email = Column(String(250), nullable=False, unique=True)
     password = Column(String(250), nullable=False)
     problems = relationship('Problems', backref='user', lazy=True)
-    optimization_results = relationship('OptimizationResult', backref='user', lazy=True)
-    
-    
+    optimization_results = relationship(
+        'OptimizationResult', backref='user',
+        lazy=True)
+
     def __init__(self, *args, **kwargs):
         """initializes criteria"""
         super().__init__(*args, **kwargs)

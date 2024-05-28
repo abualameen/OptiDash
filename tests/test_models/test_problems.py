@@ -10,6 +10,7 @@ import inspect
 import pep8
 from models.problems import Problems
 
+
 class TestProblemsDocs(unittest.TestCase):
     """Tests to check the documentation and style of Problems class"""
     @classmethod
@@ -25,7 +26,9 @@ class TestProblemsDocs(unittest.TestCase):
                          "Found code style errors (and warnings).")
 
     def test_pep8_conformance_test_problems(self):
-        """Test that tests/test_models/test_problems.py conforms to PEP8."""
+        """Test that tests/test_models/
+        test_problems.py conforms to PEP8.
+        """
         pep8s = pep8.StyleGuide(quiet=True)
         result = pep8s.check_files(['tests/test_models/test_problems.py'])
         self.assertEqual(result.total_errors, 0,
@@ -65,31 +68,44 @@ class TestProblems(unittest.TestCase):
         self.assertTrue(hasattr(problem, "updated_at"))
 
     def test_users_id_attr(self):
-        """Test that Problems has attribute users_id, and it's an empty string"""
+        """
+        Test that Problems has attribute
+        users_id, and it's an empty string
+        """
         problem = Problems()
         self.assertTrue(hasattr(problem, "users_id"))
         self.assertEqual(problem.users_id, None)
 
     def test_objective_functions_attr(self):
-        """Test that Problems has attribute objective_functions, and it's an empty string"""
+        """
+        Test that Problems has attribute
+        objective_functions, and it's an empty string
+        """
         problem = Problems()
         self.assertTrue(hasattr(problem, "objective_functions"))
         self.assertEqual(problem.objective_functions, None)
 
     def test_decision_variables_attr(self):
-        """Test that Problems has attribute decision_variables, and it's an empty string"""
+        """ Test that Problems has attribute
+            decision_variables, and it's an empty string
+        """
         problem = Problems()
         self.assertTrue(hasattr(problem, "decision_variables"))
         self.assertEqual(problem.decision_variables, None)
 
     def test_optimization_results_attr(self):
-        """Test that Problems has attribute optimization_results, and it's an empty string"""
+        """
+        Test that Problems has attribute
+        optimization_results, and it's an empty string
+        """
         problem = Problems()
         self.assertTrue(hasattr(problem, "optimization_results"))
         self.assertEqual(problem.optimization_results, None)
 
     def test_to_dict_creates_dict(self):
-        """Test to_dict method creates a dictionary with proper attrs"""
+        """ Test to_dict method creates a
+            dictionary with proper attrs
+        """
         problem = Problems()
         new_d = problem.to_dict()
         self.assertEqual(type(new_d), dict)
@@ -107,14 +123,19 @@ class TestProblems(unittest.TestCase):
         self.assertEqual(new_d["__class__"], "Problems")
         self.assertEqual(type(new_d["created_at"]), str)
         self.assertEqual(type(new_d["updated_at"]), str)
-        self.assertEqual(new_d["created_at"], problem.created_at.strftime(t_format))
-        self.assertEqual(new_d["updated_at"], problem.updated_at.strftime(t_format))
+        self.assertEqual(
+            new_d["created_at"],
+            problem.created_at.strftime(t_format))
+        self.assertEqual(
+            new_d["updated_at"],
+            problem.updated_at.strftime(t_format))
 
     def test_str(self):
         """Test that the str method has the correct output"""
         problem = Problems()
         string = "[Problems] ({}) {}".format(problem.id, problem.__dict__)
         self.assertEqual(string, str(problem))
+
 
 if __name__ == '__main__':
     unittest.main()

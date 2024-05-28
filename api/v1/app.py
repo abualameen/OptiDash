@@ -1,4 +1,8 @@
 #!/usr/bin/python3
+"""
+this is the api app module
+"""
+
 from models import storage
 from api.v1.views import app_views
 from os import environ
@@ -6,6 +10,7 @@ from flask import Flask, make_response, jsonify
 from flask_cors import CORS
 # from flasgger import Swagger
 # from flasgger.utils import swag_from
+
 
 app = Flask(__name__)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True

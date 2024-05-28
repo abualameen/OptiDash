@@ -16,7 +16,9 @@ import pep8
 import unittest
 from models import storage
 DBStorage = db_storage.DBStorage
-classes = {"Users": Users, "OptimizationResult": OptimizationResult, "Problems": Problems}
+classes = {"Users": Users,
+           "OptimizationResult": OptimizationResult,
+           "Problems": Problems}
 
 
 class TestDBStorageDocs(unittest.TestCase):

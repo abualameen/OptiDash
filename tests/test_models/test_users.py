@@ -2,7 +2,6 @@
 """
 Contains the TestUsersDocs classes
 """
-
 import inspect
 import models
 from models import users
@@ -100,7 +99,9 @@ class TestUsers(unittest.TestCase):
         self.assertEqual(user.problems, [])
 
     def test_optimization_results_attr(self):
-        """Test that Users has attribute optimization_results, and it's an empty list"""
+        """Test that Users has attribute"
+           optimization_results, and it's an empty list
+        """
         user = Users()
         self.assertTrue(hasattr(user, "optimization_results"))
         self.assertEqual(user.optimization_results, [])

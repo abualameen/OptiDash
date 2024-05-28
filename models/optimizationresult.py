@@ -6,8 +6,6 @@ from sqlalchemy import create_engine, Column, Integer
 from sqlalchemy.orm import relationship
 
 
-
-
 class OptimizationResult(BaseModel, Base):
     __tablename__ = 'optimizationresult'
     # id = Column(Integer, primary_key=True)
@@ -18,7 +16,6 @@ class OptimizationResult(BaseModel, Base):
     opti_front_obj3 = Column(JSON, nullable=True)
     opti_para = Column(JSON, nullable=False)
 
-    
     def __init__(self, *args, **kwargs):
         """initializes optimazationresult"""
         super().__init__(*args, **kwargs)
