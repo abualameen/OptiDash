@@ -25,7 +25,7 @@ socket.on('update', (data) => {
 function generateTable() {
     const rows = document.getElementById('rows').value;
     const cols = document.getElementById('cols').value;
-    let table = '<table id=tableclear>';
+    let table = '<table id=tableclear class=table>';
     console.log(`rows: ${rows}`);
     console.log(`cols: ${cols}`)
     // Header row with criteria names
@@ -36,6 +36,10 @@ function generateTable() {
     table += `<td><input type="text" placeholder="Enter objective function 3" id="objectiveFunction3"></td>`;
     table += '</tr>';
 
+    
+    
+
+    
     table += '<tr>';
     for (let k = 0; k < cols; k++) {
         table += `<th><select name="objective" required id="type_${k}">`;

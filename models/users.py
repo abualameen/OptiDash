@@ -1,4 +1,5 @@
 #!/usr/bin/python
+""" this is the users module """
 import models
 from models.base_model import BaseModel, Base
 from sqlalchemy import String, Float, ForeignKey, JSON
@@ -7,6 +8,7 @@ from sqlalchemy.orm import relationship
 
 
 class Users(BaseModel, Base):
+    """ this is the userS Class """
     __tablename__ = 'users'
     username = Column(String(250), unique=True, nullable=False)
     email = Column(String(250), nullable=False, unique=True)
@@ -21,16 +23,20 @@ class Users(BaseModel, Base):
         super().__init__(*args, **kwargs)
 
     def get_id(self):
+        """ gets id"""
         return str(self.id)
 
     @property
     def is_active(self):
+        """ checks is active"""
         return True
 
     @property
     def is_authenticated(self):
+        """ checks auth """
         return True
 
     @property
     def is_anonymous(self):
+        """ checks ano"""
         return False

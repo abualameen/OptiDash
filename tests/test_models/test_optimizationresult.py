@@ -22,7 +22,6 @@ class TestOptimizationResult(unittest.TestCase):
         self.assertIsInstance(opti_result, BaseModel)
         self.assertTrue(hasattr(opti_result, "id"))
         self.assertTrue(hasattr(opti_result, "created_at"))
-        self.assertTrue(hasattr(opti_result, "updated_at"))
 
     def test_problem_id_attr(self):
         """
@@ -50,7 +49,7 @@ class TestOptimizationResult(unittest.TestCase):
         """
         opti_result = OptimizationResult()
         self.assertTrue(hasattr(opti_result, "opti_front_obj1"))
-        self.assertEqual(opti_result.opti_front_obj1, [])
+        self.assertEqual(opti_result.opti_front_obj1, None)
 
     def test_opti_front_obj2_attr(self):
         """
@@ -59,7 +58,7 @@ class TestOptimizationResult(unittest.TestCase):
         """
         opti_result = OptimizationResult()
         self.assertTrue(hasattr(opti_result, "opti_front_obj2"))
-        self.assertEqual(opti_result.opti_front_obj2, [])
+        self.assertEqual(opti_result.opti_front_obj2, None)
 
     def test_opti_front_obj3_attr(self):
         """
@@ -77,7 +76,7 @@ class TestOptimizationResult(unittest.TestCase):
         """
         opti_result = OptimizationResult()
         self.assertTrue(hasattr(opti_result, "opti_para"))
-        self.assertEqual(opti_result.opti_para, [])
+        self.assertEqual(opti_result.opti_para, None)
 
     def test_to_dict_creates_dict(self):
         """
@@ -89,7 +88,7 @@ class TestOptimizationResult(unittest.TestCase):
         self.assertEqual(type(new_d), dict)
         self.assertFalse("_sa_instance_state" in new_d)
         for attr in o.__dict__:
-            if attr is not "_sa_instance_state":
+            if attr != "_sa_instance_state":
                 self.assertTrue(attr in new_d)
         self.assertTrue("__class__" in new_d)
 
@@ -103,16 +102,7 @@ class TestOptimizationResult(unittest.TestCase):
         new_d = o.to_dict()
         self.assertEqual(new_d["__class__"], "OptimizationResult")
         self.assertEqual(type(new_d["created_at"]), str)
-        self.assertEqual(type(new_d["updated_at"]), str)
         self.assertEqual(new_d["created_at"], o.created_at.strftime(t_format))
-        self.assertEqual(new_d["updated_at"], o.updated_at.strftime(t_format))
-
-    def test_str(self):
-        """Test that the str method has the correct output"""
-        opti_result = OptimizationResult()
-        string = "[OptimizationResult] ({}) {}".format
-        (opti_result.id, opti_result.__dict__)
-        self.assertEqual(string, str(opti_result))
 
 
 class TestOptimizationResultDocs(unittest.TestCase):

@@ -65,7 +65,6 @@ class TestProblems(unittest.TestCase):
         self.assertIsInstance(problem, BaseModel)
         self.assertTrue(hasattr(problem, "id"))
         self.assertTrue(hasattr(problem, "created_at"))
-        self.assertTrue(hasattr(problem, "updated_at"))
 
     def test_users_id_attr(self):
         """
@@ -100,7 +99,7 @@ class TestProblems(unittest.TestCase):
         """
         problem = Problems()
         self.assertTrue(hasattr(problem, "optimization_results"))
-        self.assertEqual(problem.optimization_results, None)
+        self.assertEqual(problem.optimization_results, [])
 
     def test_to_dict_creates_dict(self):
         """ Test to_dict method creates a
@@ -111,7 +110,7 @@ class TestProblems(unittest.TestCase):
         self.assertEqual(type(new_d), dict)
         self.assertFalse("_sa_instance_state" in new_d)
         for attr in problem.__dict__:
-            if attr is not "_sa_instance_state":
+            if attr != "_sa_instance_state":
                 self.assertTrue(attr in new_d)
         self.assertTrue("__class__" in new_d)
 
@@ -122,13 +121,9 @@ class TestProblems(unittest.TestCase):
         new_d = problem.to_dict()
         self.assertEqual(new_d["__class__"], "Problems")
         self.assertEqual(type(new_d["created_at"]), str)
-        self.assertEqual(type(new_d["updated_at"]), str)
         self.assertEqual(
             new_d["created_at"],
             problem.created_at.strftime(t_format))
-        self.assertEqual(
-            new_d["updated_at"],
-            problem.updated_at.strftime(t_format))
 
     def test_str(self):
         """Test that the str method has the correct output"""

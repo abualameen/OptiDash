@@ -79,27 +79,27 @@ test_db_storage.py'])
 
     def test_get_method(self):
         """Test get method."""
-        first_state_id = "1"
-        state = storage.get(Users, first_state_id)
-        self.assertIsInstance(state, Users)
-        self.assertEqual(state.id, first_state_id)
+        first_user_id = 1
+        user = storage.get(Users, first_user_id)
+        self.assertIsInstance(user, Users)
+        self.assertEqual(user.id, first_user_id)
 
 
 class TestFileStorage(unittest.TestCase):
     """Test the FileStorage class"""
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    @unittest.skipIf(models.storage != 'db', "not testing db storage")
     def test_all_returns_dict(self):
         """Test that all returns a dictionaty"""
         self.assertIs(type(models.storage.all()), dict)
 
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    @unittest.skipIf(models.storage != 'db', "not testing db storage")
     def test_all_no_class(self):
         """Test that all returns all rows when no class is passed"""
 
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    @unittest.skipIf(models.storage != 'db', "not testing db storage")
     def test_new(self):
         """test that new adds an object to the database"""
 
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    @unittest.skipIf(models.storage != 'db', "not testing db storage")
     def test_save(self):
         """Test that save properly saves objects to file.json"""

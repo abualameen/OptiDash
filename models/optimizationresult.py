@@ -1,4 +1,5 @@
 #!/usr/bin/python
+""" this is the opti result module """
 import models
 from models.base_model import BaseModel, Base
 from sqlalchemy import String, Float, ForeignKey, JSON
@@ -7,6 +8,7 @@ from sqlalchemy.orm import relationship
 
 
 class OptimizationResult(BaseModel, Base):
+    """ this is the optimization result class """
     __tablename__ = 'optimizationresult'
     # id = Column(Integer, primary_key=True)
     problem_id = Column(Integer, ForeignKey('problems.id'), nullable=False)

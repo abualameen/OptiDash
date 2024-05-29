@@ -1,4 +1,5 @@
 #!/usr/bin/python
+""" this is the problem module"""
 import models
 from models.base_model import BaseModel, Base
 from sqlalchemy import String, Float, ForeignKey, JSON
@@ -7,6 +8,7 @@ from sqlalchemy.orm import relationship
 
 
 class Problems(BaseModel, Base):
+    """ the is the Problem class"""
     __tablename__ = 'problems'
     # id = Column(Integer, primary_key=True)
     users_id = Column(Integer, ForeignKey('users.id'), nullable=False)

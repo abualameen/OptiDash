@@ -49,6 +49,10 @@ def unauthorized():
 
 @app.route('/', methods=['GET', 'POST'], strict_slashes=False)
 def index():
+    return render_template('index.html')
+
+@app.route('/reg', methods=['GET', 'POST'], strict_slashes=False)
+def reg():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
@@ -68,7 +72,7 @@ def index():
         storage.new(new_user)
         storage.save()
         return redirect(url_for("login"))
-    return render_template('index.html')
+    return render_template('reg.html')
 
 
 @app.route("/login", methods=["GET", "POST"])

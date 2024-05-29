@@ -18,10 +18,12 @@ classes = {"Users": Users, "OptimizationResult": OptimizationResult,
 
 
 class DBStorage:
+    """ ths is the DBStorage """
     __engine = None
     __session = None
 
     def __init__(self):
+        """ init """
         OD_MYSQL_USER = getenv('OD_MYSQL_USER')
         OD_MYSQL_PWD = getenv('OD_MYSQL_PWD')
         OD_MYSQL_HOST = getenv('OD_MYSQL_HOST')

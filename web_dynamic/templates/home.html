@@ -7,8 +7,8 @@ About
 
 <div class="container-fluid" id="genDiv">
     <h2 id="heading">OptiDash</h2>
-    <div class="row" style="display: flex;">
-        <div class="col-lg-12">
+    <div class="row" style="display: flex; flex-wrap: wrap;">
+        <div class="col-lg-6">
 
  
             <form class="form-inline" id="criteriaForm" method="POST"></form>
@@ -34,10 +34,7 @@ About
                     {% endif %}
                     {% endwith %}
                     <div class="row">
-                        <div class="col-lg-6">
-                            <div class="table-responsive" id="table-container"></div>
-                        </div>
-                
+                        <div class="table-responsive" id="table-container"></div>
                     </div>
                 
                 </div>
@@ -47,10 +44,47 @@ About
                 <button id="tableGen" type="button" onclick="submitFormData(event)">Submit</button>
             </form>
         </div> 
-    </div>   
+      
     
-</div>
 
+
+        <div class="col-lg-6">
+            <div id="instructions">
+                <h3>How to Use OptiDash</h3>
+                <p>Welcome to OptiDash! Follow these instructions to get started:</p>
+                <ol>
+                    <li>Access the main web page at <code>/home</code>.</li>
+                    <li>Fill out the form with the appropriate details. Pay special attention to the format of the objective function. Use <code>**</code> for squaring.</li>
+                    <li>Here’s an example of an objective function:
+                        <pre>
+        <code>def objective_function(I):
+        x0 = I[0]
+        x1 = I[1]
+        x2 = I[2]
+        x3 = I[3]
+        x4 = I[4]
+        x5 = I[5]
+        x6 = I[6]
+        return 0.5 * x0 * x1 * (1 + 100 * (5 + sum((xi - 0.5)**2 - np.cos(20 * np.pi * (xi - 0.5)) for xi in [x2, x3, x4, x5, x6])))</code>
+                        </pre>
+                    </li>
+                    <li>Make sure the decision variables provided in the form exist in the same manner in the objective function.</li>
+                    <li>When filling the form, only supply the function body. For example:
+                        <pre>
+        <code>0.5 * x0 * x1 * (1 + 100 * (5 + sum((xi - 0.5)**2 - np.cos(20 * np.pi * (xi - 0.5)) for xi in [x2, x3, x4, x5, x6])))</code>
+                        </pre>
+                    </li>
+                    <li>Click "Submit" and watch as the Pareto optimal front is dynamically searched for.</li>
+                    <li>The corresponding generated Pareto optimal data will be displayed in a tabular form for your review.</li>
+                </ol>
+                <p>We hope you find OptiDash helpful for your optimization needs. Happy optimizing!</p>
+            </div>
+        </div>
+        </div>
+        </div>
+
+    </div>
+</div>
 
 <!-- <div id="table-container"></div> -->
 {% endblock %}
