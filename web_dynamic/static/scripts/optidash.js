@@ -36,7 +36,17 @@ function generateTable() {
     table += `<td><input type="text" placeholder="Enter objective function 3" id="objectiveFunction3"></td>`;
     table += '</tr>';
 
+    table += '<tr>';
+    table += `<td><input type="number" placeholder="Enter Population size" id="pop_size"></td>`;
+    table += `<td><input type="number" placeholder="Enter Iteration Number" id="ita"></td>`;
+    table += `<td><input type="number" placeholder="Enter Cross-over rate" id="cor"></td>`;
+    table += '</tr>';
     
+    table += '<tr>';
+    table += `<td><input type="number" placeholder="Enter Cross-over coeficient" id="coc"></td>`;
+    table += `<td><input type="number" placeholder="Enter Mutation rate" id="mr"></td>`;
+    table += `<td><input type="number" placeholder="Enter Mutation coeficient" id="mc"></td>`;
+    table += '</tr>';
     
 
     
