@@ -17,6 +17,11 @@ class Problems(BaseModel, Base):
     optimization_results = relationship(
         'OptimizationResult', backref='problems',
         lazy=True)
+    optimization_parameters = relationship(
+        'OptimizationParameters',
+        backref='problems', lazy=True,
+        overlaps="opt_params,optimization_parameters")
+
 
     def __init__(self, *args, **kwargs):
         """initializes Problems"""

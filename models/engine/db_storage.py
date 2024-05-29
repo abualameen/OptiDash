@@ -6,6 +6,7 @@ import models
 from models.users import Users
 from models.problems import Problems
 from models.optimizationresult import OptimizationResult
+from models.optimizationparameters import OptimizationParameters
 from models.base_model import BaseModel, Base
 import sqlalchemy
 from sqlalchemy import create_engine
@@ -14,7 +15,7 @@ from os import getenv
 
 
 classes = {"Users": Users, "OptimizationResult": OptimizationResult,
-           "Problems": Problems}
+           "Problems": Problems, "OptimizationParameters": OptimizationParameters}
 
 
 class DBStorage:
@@ -113,6 +114,16 @@ class DBStorage:
             result for result in all_results.values()
             if result.problem_id == int(problem_id)]
         return problem_results
+
+    def get_optimization_param_by_problem_id(self, problem_id):
+        """Returns all optimization results
+            associated with a specific problem_id
+        """
+        all_params = self.all(OptimizationParameters)
+        problem_params = [
+            param for param in all_params.values()
+            if param.problem_id == int(problem_id)]
+        return problem_params
 
     def count(self, cls=None):
         """

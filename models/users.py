@@ -17,6 +17,9 @@ class Users(BaseModel, Base):
     optimization_results = relationship(
         'OptimizationResult', backref='user',
         lazy=True)
+    optimization_parameters = relationship(
+        'OptimizationParameters', backref='user_param',
+        lazy=True, overlaps="user_param,user")
 
     def __init__(self, *args, **kwargs):
         """initializes criteria"""

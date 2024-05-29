@@ -36,8 +36,19 @@ function generateTable() {
     table += `<td><input type="text" placeholder="Enter objective function 3" id="objectiveFunction3"></td>`;
     table += '</tr>';
 
+       
     table += '<tr>';
-    table += `<td><input type="number" placeholder="Enter Population size" id="pop_size"></td>`;
+    for (let k = 0; k < cols; k++) {
+        table += `<th><select name="objective" required id="type_${k}">`;
+        table += '<option value="" disabled selected hidden>Objectives</option>';
+        table += '<option value="Minimization">Minimazation</option>';
+        table += '<option value="Maximization">Maximization</option>';
+        table += '</select></th>';
+    }
+    table += '</tr>';
+
+    table += '<tr>';
+    table += `<td><input type="number" placeholder="Enter Population size" id="pop"></td>`;
     table += `<td><input type="number" placeholder="Enter Iteration Number" id="ita"></td>`;
     table += `<td><input type="number" placeholder="Enter Cross-over rate" id="cor"></td>`;
     table += '</tr>';
@@ -49,16 +60,7 @@ function generateTable() {
     table += '</tr>';
     
 
-    
-    table += '<tr>';
-    for (let k = 0; k < cols; k++) {
-        table += `<th><select name="objective" required id="type_${k}">`;
-        table += '<option value="" disabled selected hidden>Objectives</option>';
-        table += '<option value="Minimization">Minimazation</option>';
-        table += '<option value="Maximization">Maximization</option>';
-        table += '</select></th>';
-    }
-    table += '</tr>';
+ 
 
 
     for (let j = 0; j < cols; j++) {
@@ -111,6 +113,7 @@ function submitFormData(event) {
     const tableData = [];
     const tableData1 = [];
     const tableData2 = [];
+    const tableData3 = []
     for (let i = 0; i < rows; i++) {
         const rowData = [];
         for (let j = 0; j < cols; j++) {
@@ -138,6 +141,20 @@ function submitFormData(event) {
         // console.log(tableData)
     }
     
+    const pop_size = document.getElementById("pop").value;
+    const Iteration = document.getElementById("ita").value;
+    const Cross_rate = document.getElementById("cor").value;
+
+    const Cross_coef  = document.getElementById("coc").value;
+    const Mutation_rate = document.getElementById("mr").value;
+    const Mutation_coef = document.getElementById("mc").value;
+    
+    tableData3.push(pop_size);
+    tableData3.push(Iteration);
+    tableData3.push(Cross_rate);
+    tableData3.push(Cross_coef);
+    tableData3.push(Mutation_rate);
+    tableData3.push(Mutation_coef);
 
     
 
@@ -145,7 +162,7 @@ function submitFormData(event) {
         type: 'POST',
         url: '/home',
         contentType: 'application/json;charset=UTF-8',
-        data: JSON.stringify({ tableData, tableData1, tableData2}),
+        data: JSON.stringify({ tableData, tableData1, tableData2, tableData3}),
         success: function (data) {
             try {
                 // Check if data is defined and has the expected properties

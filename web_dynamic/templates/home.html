@@ -53,8 +53,13 @@ About
                 <h3>How to Use OptiDash</h3>
                 <p>Welcome to OptiDash! Follow these instructions to get started:</p>
                 <ol>
-                    <li>Access the main web page at <code>/home</code>.</li>
                     <li>Fill out the form with the appropriate details. Pay special attention to the format of the objective function. Use <code>**</code> for squaring.</li>
+                    <li>Note: The decision variable filled should appear in same way they are in the objective functions</li>
+                    <li>Also note that if your problem is a two(2) objective problem, ignore the colums and rows of the third objective</li>
+                    <li>Respect the general format of filling out the objective function, this would be properly explain below, the point though is to avoid any sub computations within the objective function's body, all computation should be within the return value</li>
+                    <li>If you encounter any issues refresh and fill the form appropriatly and submit again</li>
+                    <li>If that does not solves it, please do contact us</li>
+                
                     <li>Here’s an example of an objective function:
                         <pre>
         <code>def objective_function(I):
@@ -69,7 +74,7 @@ About
                         </pre>
                     </li>
                     <li>Make sure the decision variables provided in the form exist in the same manner in the objective function.</li>
-                    <li>When filling the form, only supply the function body. For example:
+                    <li>When filling the form, only supply the function's return formula as seen above. For example:
                         <pre>
         <code>0.5 * x0 * x1 * (1 + 100 * (5 + sum((xi - 0.5)**2 - np.cos(20 * np.pi * (xi - 0.5)) for xi in [x2, x3, x4, x5, x6])))</code>
                         </pre>
