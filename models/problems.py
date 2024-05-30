@@ -22,7 +22,6 @@ class Problems(BaseModel, Base):
         backref='problems', lazy=True,
         overlaps="opt_params,optimization_parameters")
 
-
     def __init__(self, *args, **kwargs):
         """initializes Problems"""
         super().__init__(*args, **kwargs)

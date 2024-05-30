@@ -36,7 +36,7 @@ def get_optimizationparam_by_id(optimizationpar_id):
 
 
 @app_views.route(
-        '/optimizationparameters/<int:problem_id>/optimization_params',
+        '/problems/<int:problem_id>/optimization_params',
         methods=['GET'],
         strict_slashes=False)
 def get_optimization_param_by_problem_id(problem_id):
@@ -45,6 +45,7 @@ def get_optimization_param_by_problem_id(problem_id):
     """
     params = storage.get_optimization_param_by_problem_id(
         problem_id)
+    print('param', params)
     if not params:
         abort(404, description="Param not found or no optimization"
               "param associated with this problem.")

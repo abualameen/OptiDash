@@ -15,7 +15,8 @@ from os import getenv
 
 
 classes = {"Users": Users, "OptimizationResult": OptimizationResult,
-           "Problems": Problems, "OptimizationParameters": OptimizationParameters}
+           "Problems": Problems,
+           "OptimizationParameters": OptimizationParameters}
 
 
 class DBStorage:
@@ -110,6 +111,7 @@ class DBStorage:
             associated with a specific problem_id
         """
         all_results = self.all(OptimizationResult)
+        print('all_res', all_results)
         problem_results = [
             result for result in all_results.values()
             if result.problem_id == int(problem_id)]
@@ -120,9 +122,10 @@ class DBStorage:
             associated with a specific problem_id
         """
         all_params = self.all(OptimizationParameters)
+        print('all_parm', all_params)
         problem_params = [
             param for param in all_params.values()
-            if param.problem_id == int(problem_id)]
+            if int(param.problem_id) == int(problem_id)]
         return problem_params
 
     def count(self, cls=None):

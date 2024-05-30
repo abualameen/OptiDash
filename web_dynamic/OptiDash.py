@@ -52,6 +52,7 @@ def unauthorized():
 def index():
     return render_template('index.html')
 
+
 @app.route('/reg', methods=['GET', 'POST'], strict_slashes=False)
 def reg():
     if request.method == "POST":
@@ -144,6 +145,7 @@ def home():
             table_data1 = data.get('tableData1')
             table_data2 = data.get('tableData2')
             table_data3 = data.get('tableData3')
+
             def con_str_int1(table_dat):
                 """Convert strings in the list
                 to integers or floats.
@@ -195,8 +197,6 @@ def home():
                 mutation_rate=table_data3[4],
                 mutation_coef=table_data3[5]
             )
-              
-            
             storage.new(new_opti_para)
             storage.save()
             if len(table_data1) == 2:
@@ -211,6 +211,7 @@ def home():
                     opti_para=opti_para
                 )
                 storage.new(new_result)
+                storage.save()
                 return jsonify({
                     'opti_front_obj1': opti_front_obj1,
                     'opti_front_obj2': opti_front_obj2,
@@ -277,22 +278,6 @@ def nsga2(
                 row.append(item)
             table_dataa.append(row)
         return table_dataa
-    
-    # def con_str_int1(table_dat):
-    #     """Convert strings in the list
-    #     to integers or floats.
-    #     """
-    #     table_dataa1 = []
-    #     for item in table_dat:
-    #         try:
-    #             number = float(item)
-    #             if number.is_integer():
-    #                 number = int(number)
-    #             table_dataa1.append(number)
-    #         except ValueError:
-    #             table_dataa1.append(item)
-    #     return table_dataa1
-    
     table_new = con_str_int(table_data)
     # table_new1 = con_str_int1(table_data3)
     dv = []  # retrieving only the decision variables
@@ -723,7 +708,7 @@ def nsga2(
 def nsgaa2(
         table_data,
         table_data1,
-        table_data2, task_id):
+        table_data2, table_data3, task_id):
     """
     Implementing NSGAII for three objectives
     """
@@ -742,14 +727,14 @@ def nsgaa2(
     dv = []  # retrieving only the decision variables
     for k in range(len(table_new)):
         dv.append(table_new[k][0])
-    pop_size = 100
+    pop_size = table_data3[0]
     bounds = [[row[1], row[2]] for row in table_new]
     nv = len(bounds)
-    iteration = 150
-    crossover_rate = 1.0
-    mutation_rate = 1/nv
-    ita_c = 30
-    ita_m = 20
+    iteration = table_data3[1]
+    crossover_rate = table_data3[2]
+    mutation_rate = table_data3[4]
+    ita_c = table_data3[3]
+    ita_m = table_data3[5]
     nv = 30
     ghk = []
     newpopfit = []

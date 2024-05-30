@@ -11,3 +11,4 @@ from api.v1.views.problems import *
 from api.v1.views.users import *
 from api.v1.views.optimizationresult import *
 from api.v1.views.optimizationparam import *
+from api.v1.views.index import *

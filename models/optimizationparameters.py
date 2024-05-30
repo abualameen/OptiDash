@@ -18,12 +18,12 @@ class OptimizationParameters(BaseModel, Base):
     crossover_coef = Column(Integer, nullable=False)
     mutation_rate = Column(Integer, nullable=False)
     mutation_coef = Column(Integer, nullable=False)
-    problem = relationship(
-        'Problems', backref='opti_params',
-        overlaps="optimization_parameters,problems")
-    user = relationship(
-        'Users', backref='opti_params',
-        overlaps="optimization_parameters,user_param")
+    # problem = relationship(
+    #     'Problems', backref='opti_params',
+    #     overlaps="optimization_parameters,problems")
+    # user = relationship(
+    #     'Users', backref='opti_params',
+    #     overlaps="optimization_parameters,user_param")
 
     def __init__(self, *args, **kwargs):
         """initializes OptimizationParameter"""

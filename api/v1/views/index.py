@@ -18,10 +18,9 @@ def status():
 @app_views.route('/eachobj', methods=['GET'], strict_slashes=False)
 def number_objects():
     """ Retrieves the number of each objects by type """
-    classes = [Users, OptimizationResult,
-                OptimizationParameters, Problems]
-    names = ["users", "optimizationresult",
-                "optimizationparameters", "problems"]
+    classes = [Users, OptimizationResult, OptimizationParameters, Problems]
+    names = ["users", "optimizationresult", "optimizationparameters",
+             "problems"]
 
     num_objs = {}
     for i in range(len(classes)):
