@@ -43,8 +43,8 @@ To use OptiDash, follow these steps:
 
 ## Technologies Used
 
-- **Frontend**: HTML, CSS, JavaScript
-- **Backend**: Python, Flask
+- **Frontend**: HTML, CSS, JavaScript, Plotly
+- **Backend**: Python, Flask, Flask Socket.io
 - **Database**: MySQL (for storing user data)
 - **Deployment**: Nginx. Gunicorn, Supervisor
 
