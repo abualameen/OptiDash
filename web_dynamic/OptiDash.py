@@ -31,7 +31,7 @@ task_results_lock = Lock()
 app = Flask(__name__)
 
 socketio = SocketIO(app, cors_allowed_origins="*")
-app.config["SECRET_KEY"] = "abulyaqs@gmail.com"
+app.config["SECRET_KEY"] = "ebe9a5bc0096ac01ed1c6027629423f50f3da598699e3af0bdcb5ed4057c81e9"
 
 login_manager = LoginManager()
 login_manager.init_app(app)
