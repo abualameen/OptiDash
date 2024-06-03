@@ -1,4 +1,5 @@
 # OptiDash
+![OptiDash](https://github.com/abualameen/OptiDash/assets/75878845/b0dd9246-2684-4594-a679-f98a0c290072)
 
 OptiDash is an online multi-objective optimization problem solver designed for engineers, researchers, educators in the field of optimization, students and any one who wants to make informed decision. It is based on the Non Dominated Sorted Genetic Algorithm II,
 which is able to solve two and three objective optimization problems in any field. The Algorithm was developed by Professor Debs and his team of researchers.
