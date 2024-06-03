@@ -9,7 +9,7 @@ With OptiDash obtaining the pareto optimal solutions is made easy, thereby enhan
 
 ## Inspiration
 
-The inspiration behind developing OptiDash stemmed from my experience as a mechanical engineer specializing in solving engineering optimization problems. Often, in the field we encounter the challenge solving multi-objective optimization problem of which most is solve in codes, which is not very fimilair and easy to use by other non-programmers or research team met that are not able to code or programme.
+The inspiration behind developing OptiDash stemmed from my experience as a mechanical engineer specializing in solving engineering optimization problems. Often, in the field we encounter the challenge solving multi-objective optimization problem of which most is solve in codes, which is not very fimilair and easy to use by other non-programmers or research team mate that are not able to code or programme.
 
 Recognizing the need for a more efficient and user-friendly solution, I embarked on developing OptiDash. This project streamlines the decision-making process by allowing users to input their NSGA II parameters, objective functions and search space of each decision variable and swiftly obtain the Optimal Pareto Front of the problem. By automating this process, OptiDash enhances productivity and accuracy, empowering engineers, researchers, and students alike to make informed decisions effectively.
 
